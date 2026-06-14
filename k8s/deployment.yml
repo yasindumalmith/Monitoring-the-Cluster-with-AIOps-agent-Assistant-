@@ -26,8 +26,8 @@ spec:
         fsGroup: 1000
       containers:
         - name: app
-          image: ai-ops-assistant:0.1.0
-          imagePullPolicy: IfNotPresent
+          image: yasindumalmith/ai-ops-assistant:v1
+          imagePullPolicy: Always
           ports:
             - containerPort: 8000
               name: http

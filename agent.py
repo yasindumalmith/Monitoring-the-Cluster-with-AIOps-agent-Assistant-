@@ -15,7 +15,13 @@ from tools import TOOLS, TOOL_FUNCTIONS
 load_dotenv()
 console = Console()
 
-config.load_kube_config()
+def _load_config():
+    try:
+        config.load_incluster_config()
+    except config.ConfigException:
+        config.load_kube_config()
+
+_load_config()
 v1 = client.CoreV1Api()
 
 log = structlog.get_logger()
