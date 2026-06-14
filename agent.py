@@ -79,8 +79,10 @@ def run_agent(messages: list) -> tuple[str, list]:
 
 
 def main():
-    console.print("[bold cyan]AI Ops Assistant — Phase 1[/bold cyan]")
-    console.print("[dim]Ask me about your cluster. Type 'exit' to quit.[/dim]\n")
+    console.print("[bold cyan]AI Ops Assistant — Phase 2[/bold cyan]")
+    console.print("[dim]Multi-turn enabled. Type 'reset' to clear history, 'exit' to quit.[/dim]\n")
+
+    messages = []
 
     while True:
         try:
@@ -90,10 +92,15 @@ def main():
 
         if user_input.lower() in {"exit", "quit"}:
             break
+        if user_input.lower() == "reset":
+            messages = []
+            console.print("[dim]history cleared[/dim]\n")
+            continue
         if not user_input.strip():
             continue
 
-        answer = run_agent(user_input)
+        messages.append({"role": "user", "content": user_input})
+        answer, messages = run_agent(messages)
         console.print()
         console.print(Markdown(answer))
         console.print()
