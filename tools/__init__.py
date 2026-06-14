@@ -1,7 +1,7 @@
 from .pods import get_pods
 from .logs import get_logs
 from .describe import describe_resource
-from .deployments import deployment_status
+from .deployment import deployment_status
 from .nodes import node_health
 from .metrics import query_metrics
 
