@@ -1,0 +1,75 @@
+import time
+import uuid
+import structlog
+from fastapi import FastAPI, Request
+from fastapi.responses import Response
+from pydantic import BaseModel
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
+
+from app.agent import run_agent
+from app.logging_config import configure_logging
+from app.metrics import requests_total, request_duration
+
+configure_logging()
+log = structlog.get_logger()
+
+app = FastAPI(title="AI Ops Assistant", version="1.0.0")
+
+
+class Message(BaseModel):
+    role: str
+    content: str | list
+
+
+class ChatRequest(BaseModel):
+    messages: list[Message]
+
+
+class ChatResponse(BaseModel):
+    request_id: str
+    content: str
+
+
+@app.middleware("http")
+async def add_request_id(request: Request, call_next):
+    request_id = request.headers.get("X-Request-ID", str(uuid.uuid4()))
+    structlog.contextvars.bind_contextvars(request_id=request_id)
+    request.state.request_id = request_id
+    response = await call_next(request)
+    response.headers["X-Request-ID"] = request_id
+    structlog.contextvars.clear_contextvars()
+    return response
+
+
+@app.post("/v1/chat", response_model=ChatResponse)
+async def chat(req: ChatRequest, request: Request):
+    request_id = request.state.request_id
+    start = time.time()
+    log.info("chat.request", message_count=len(req.messages))
+
+    messages = [m.model_dump() for m in req.messages]
+    try:
+        answer, _ = run_agent(messages, request_id)
+        requests_total.labels(status="ok").inc()
+        return ChatResponse(request_id=request_id, content=answer)
+    except Exception as e:
+        requests_total.labels(status="error").inc()
+        log.exception("chat.error", error=str(e))
+        raise
+    finally:
+        request_duration.observe(time.time() - start)
+
+
+@app.get("/healthz")
+async def healthz():
+    return {"status": "ok"}
+
+
+@app.get("/readyz")
+async def readyz():
+    return {"status": "ready"}
+
+
+@app.get("/metrics")
+async def metrics():
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)

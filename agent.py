@@ -1,5 +1,6 @@
 import json
 import os
+import uuid
 from anthropic import Anthropic
 from dotenv import load_dotenv
 from kubernetes import client, config
@@ -44,6 +45,7 @@ MAX_ITERATIONS = 10
 
 def run_agent(messages: list) -> tuple[str, list]:
     """Run the agent loop. Returns (final_text, updated_messages)."""
+    request_id = str(uuid.uuid4())
     for iteration in range(MAX_ITERATIONS):
         response = anthropic_client.messages.create(
             model=MODEL,
@@ -74,10 +76,13 @@ def run_agent(messages: list) -> tuple[str, list]:
                 if block.type == "tool_use":
                     console.print(f"[yellow]→ {block.name}({json.dumps(block.input)})[/yellow]")
                     func = TOOL_FUNCTIONS[block.name]
+                    start = time.time()
                     try:
                         result = func(**block.input)
+                        status = "error" if isinstance(result, dict) and "error" in result else "success"
                     except Exception as e:
                         result = {"error": f"Tool execution failed: {e}"}
+                        status = "error"
                     preview = json.dumps(result)[:150]
                     console.print(f"[dim]  ↳ {preview}{'...' if len(preview) >= 150 else ''}[/dim]")
                     
