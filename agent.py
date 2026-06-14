@@ -5,6 +5,9 @@ from dotenv import load_dotenv
 from kubernetes import client, config
 from rich.console import Console
 from rich.markdown import Markdown
+import time
+import structlog
+from metrics import tool_calls_total, tokens_total, agent_iterations
 
 from tools import TOOLS, TOOL_FUNCTIONS
 
@@ -14,6 +17,7 @@ console = Console()
 config.load_kube_config()
 v1 = client.CoreV1Api()
 
+log = structlog.get_logger()
 anthropic_client = Anthropic()
 MODEL = "claude-sonnet-4-20250514"
 
@@ -49,6 +53,15 @@ def run_agent(messages: list) -> tuple[str, list]:
             messages=messages,
         )
 
+        tokens_total.labels(kind="input").inc(response.usage.input_tokens)
+        tokens_total.labels(kind="output").inc(response.usage.output_tokens)
+        log.info("llm.call",
+                 request_id=request_id,
+                 iteration=iteration,
+                 stop_reason=response.stop_reason,
+                 input_tokens=response.usage.input_tokens,
+                 output_tokens=response.usage.output_tokens)
+
         if response.stop_reason == "end_turn":
             messages.append({"role": "assistant", "content": response.content})
             final_text = "".join(b.text for b in response.content if b.type == "text")
@@ -67,6 +80,16 @@ def run_agent(messages: list) -> tuple[str, list]:
                         result = {"error": f"Tool execution failed: {e}"}
                     preview = json.dumps(result)[:150]
                     console.print(f"[dim]  ↳ {preview}{'...' if len(preview) >= 150 else ''}[/dim]")
+                    
+                    
+                    tool_calls_total.labels(tool=block.name, status=status).inc()
+                    log.info("tool.call",
+                             request_id=request_id,
+                             tool=block.name,
+                             input=block.input,
+                             status=status,
+                             duration_ms=int((time.time() - start) * 1000))
+
                     tool_results.append({
                         "type": "tool_result",
                         "tool_use_id": block.id,
