@@ -16,52 +16,21 @@ anthropic_client = Anthropic()
 MODEL = "claude-sonnet-4-20250514"
 
 
-def get_pods(namespace: str = "default") -> dict:
-    """Actual tool implementation — talks to the K8s API."""
-    try:
-        pods = v1.list_namespaced_pod(namespace=namespace)
-        result = []
-        for pod in pods.items:
-            container_statuses = pod.status.container_statuses or []
-            restarts = sum(c.restart_count for c in container_statuses)
-            result.append({
-                "name": pod.metadata.name,
-                "namespace": pod.metadata.namespace,
-                "phase": pod.status.phase,
-                "ready": all(c.ready for c in container_statuses) if container_statuses else False,
-                "restarts": restarts,
-                "node": pod.spec.node_name,
-            })
-        return {"pods": result, "count": len(result)}
-    except Exception as e:
-        return {"error": str(e)}
 
+SYSTEM_PROMPT = """You are a Kubernetes operations assistant. You help engineers diagnose
+issues in their cluster using read-only tools.
 
-TOOLS = [
-    {
-        "name": "get_pods",
-        "description": (
-            "List all pods in a given Kubernetes namespace with their status, "
-            "ready state, restart count, and which node they run on. "
-            "Use this whenever the user asks about pod health, what is running, "
-            "or what is failing in a namespace."
-        ),
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "namespace": {
-                    "type": "string",
-                    "description": "The Kubernetes namespace to query. Defaults to 'default' if not specified.",
-                },
-            },
-            "required": [],
-        },
-    },
-]
-
-TOOL_FUNCTIONS = {
-    "get_pods": get_pods,
-}
+Operating rules:
+- Always start broad: use get_pods or node_health to find the problem, then
+  drill down with describe_resource and get_logs.
+- For "why is X failing" questions, describe_resource is usually more useful
+  than get_logs — events explain image pulls, crashes, scheduling failures.
+- When you call get_logs, ask for small tail_lines (20–50) unless the user
+  asks for more.
+- If a tool returns an error, explain it in plain language and suggest what
+  the user could check.
+- Be concise. Use bullet points for findings. Don't restate raw tool output
+  back to the user — summarize what matters."""
 
 
 def run_agent(user_message: str) -> str:
