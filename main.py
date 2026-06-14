@@ -6,9 +6,9 @@ from fastapi.responses import Response
 from pydantic import BaseModel
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
-from app.agent import run_agent
-from app.logging_config import configure_logging
-from app.metrics import requests_total, request_duration
+from agent import run_agent
+from logging_config import configure_logging
+from metrics import requests_total, request_duration
 
 configure_logging()
 log = structlog.get_logger()
