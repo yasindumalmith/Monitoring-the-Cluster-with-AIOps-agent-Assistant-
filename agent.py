@@ -6,6 +6,8 @@ from kubernetes import client, config
 from rich.console import Console
 from rich.markdown import Markdown
 
+from tools import TOOLS, TOOL_FUNCTIONS
+
 load_dotenv()
 console = Console()
 
