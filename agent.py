@@ -33,49 +33,49 @@ Operating rules:
   back to the user — summarize what matters."""
 
 
-def run_agent(user_message: str) -> str:
-    """Run the agent loop until Claude produces a final answer."""
-    messages = [{"role": "user", "content": user_message}]
+MAX_ITERATIONS = 10
 
-    while True:
+
+def run_agent(messages: list) -> tuple[str, list]:
+    """Run the agent loop. Returns (final_text, updated_messages)."""
+    for iteration in range(MAX_ITERATIONS):
         response = anthropic_client.messages.create(
             model=MODEL,
-            max_tokens=1024,
+            max_tokens=2048,
+            system=SYSTEM_PROMPT,
             tools=TOOLS,
             messages=messages,
         )
 
-        console.print(f"[dim]stop_reason: {response.stop_reason}[/dim]")
-
         if response.stop_reason == "end_turn":
-            final_text = "".join(
-                block.text for block in response.content if block.type == "text"
-            )
-            return final_text
+            messages.append({"role": "assistant", "content": response.content})
+            final_text = "".join(b.text for b in response.content if b.type == "text")
+            return final_text, messages
 
         if response.stop_reason == "tool_use":
             messages.append({"role": "assistant", "content": response.content})
-
             tool_results = []
             for block in response.content:
                 if block.type == "tool_use":
-                    console.print(
-                        f"[yellow]→ calling tool:[/yellow] {block.name}({json.dumps(block.input)})"
-                    )
+                    console.print(f"[yellow]→ {block.name}({json.dumps(block.input)})[/yellow]")
                     func = TOOL_FUNCTIONS[block.name]
-                    result = func(**block.input)
-                    console.print(f"[dim]   result: {json.dumps(result)[:200]}...[/dim]")
-
+                    try:
+                        result = func(**block.input)
+                    except Exception as e:
+                        result = {"error": f"Tool execution failed: {e}"}
+                    preview = json.dumps(result)[:150]
+                    console.print(f"[dim]  ↳ {preview}{'...' if len(preview) >= 150 else ''}[/dim]")
                     tool_results.append({
                         "type": "tool_result",
                         "tool_use_id": block.id,
                         "content": json.dumps(result),
                     })
-
             messages.append({"role": "user", "content": tool_results})
             continue
 
-        return f"Unexpected stop_reason: {response.stop_reason}"
+        return f"Unexpected stop_reason: {response.stop_reason}", messages
+
+    return "Hit max iterations without a final answer.", messages
 
 
 def main():
