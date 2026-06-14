@@ -1,6 +1,7 @@
 import requests
+import os
 
-PROMETHEUS_URL = "http://localhost:9090"
+PROMETHEUS_URL = os.getenv("PROMETHEUS_URL", "http://prometheus-kube-prometheus-prometheus.monitoring.svc:9090")
 
 
 def query_metrics(promql: str) -> dict:
