@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-ops-assistant
+  namespace: ai-ops
+  labels:
+    app: ai-ops-assistant
+spec:
+  type: ClusterIP
+  selector:
+    app: ai-ops-assistant
+  ports:
+    - port: 80
+      targetPort: 8000
+      name: http
