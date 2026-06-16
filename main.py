@@ -3,7 +3,8 @@ import uuid
 import structlog
 from fastapi import FastAPI, Request
 from fastapi.responses import Response
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
+from typing import Any
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 from agent import run_agent
@@ -25,9 +26,15 @@ class ChatRequest(BaseModel):
     messages: list[Message]
 
 
+class ToolCallData(BaseModel):
+    tool: str
+    input: dict[str, Any]
+    result: Any
+
 class ChatResponse(BaseModel):
     request_id: str
     content: str
+    tool_calls: list[ToolCallData] = Field(default_factory=list)
 
 
 @app.middleware("http")
@@ -49,9 +56,9 @@ async def chat(req: ChatRequest, request: Request):
 
     messages = [m.model_dump() for m in req.messages]
     try:
-        answer, _ = run_agent(messages, request_id)
+        answer, _, tool_calls = run_agent(messages, request_id)
         requests_total.labels(status="ok").inc()
-        return ChatResponse(request_id=request_id, content=answer)
+        return ChatResponse(request_id=request_id, content=answer, tool_calls=tool_calls)
     except Exception as e:
         requests_total.labels(status="error").inc()
         log.exception("chat.error", error=str(e))

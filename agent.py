@@ -49,9 +49,10 @@ Operating rules:
 MAX_ITERATIONS = 10
 
 
-def run_agent(messages: list, request_id: str = None) -> tuple[str, list]:
-    """Run the agent loop. Returns (final_text, updated_messages)."""
+def run_agent(messages: list, request_id: str = None) -> tuple[str, list, list]:
+    """Run the agent loop. Returns (final_text, updated_messages, tool_calls)."""
     request_id = request_id or str(uuid.uuid4())
+    agent_tool_calls = []
     for iteration in range(MAX_ITERATIONS):
         response = anthropic_client.messages.create(
             model=MODEL,
@@ -73,7 +74,7 @@ def run_agent(messages: list, request_id: str = None) -> tuple[str, list]:
         if response.stop_reason == "end_turn":
             messages.append({"role": "assistant", "content": response.content})
             final_text = "".join(b.text for b in response.content if b.type == "text")
-            return final_text, messages
+            return final_text, messages, agent_tool_calls
 
         if response.stop_reason == "tool_use":
             messages.append({"role": "assistant", "content": response.content})
@@ -101,6 +102,12 @@ def run_agent(messages: list, request_id: str = None) -> tuple[str, list]:
                              status=status,
                              duration_ms=int((time.time() - start) * 1000))
 
+                    agent_tool_calls.append({
+                        "tool": block.name,
+                        "input": block.input,
+                        "result": result
+                    })
+
                     tool_results.append({
                         "type": "tool_result",
                         "tool_use_id": block.id,
@@ -109,9 +116,9 @@ def run_agent(messages: list, request_id: str = None) -> tuple[str, list]:
             messages.append({"role": "user", "content": tool_results})
             continue
 
-        return f"Unexpected stop_reason: {response.stop_reason}", messages
+        return f"Unexpected stop_reason: {response.stop_reason}", messages, agent_tool_calls
 
-    return "Hit max iterations without a final answer.", messages
+    return "Hit max iterations without a final answer.", messages, agent_tool_calls
 
 
 def main():
@@ -136,7 +143,7 @@ def main():
             continue
 
         messages.append({"role": "user", "content": user_input})
-        answer, messages = run_agent(messages)
+        answer, messages, _ = run_agent(messages)
         console.print()
         console.print(Markdown(answer))
         console.print()
