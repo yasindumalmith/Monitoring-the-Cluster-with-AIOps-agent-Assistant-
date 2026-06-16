@@ -26,7 +26,7 @@ v1 = client.CoreV1Api()
 
 log = structlog.get_logger()
 anthropic_client = Anthropic()
-MODEL = "claude-sonnet-4-20250514"
+MODEL = "claude-sonnet-4-6"
 
 
 
@@ -49,9 +49,9 @@ Operating rules:
 MAX_ITERATIONS = 10
 
 
-def run_agent(messages: list) -> tuple[str, list]:
+def run_agent(messages: list, request_id: str = None) -> tuple[str, list]:
     """Run the agent loop. Returns (final_text, updated_messages)."""
-    request_id = str(uuid.uuid4())
+    request_id = request_id or str(uuid.uuid4())
     for iteration in range(MAX_ITERATIONS):
         response = anthropic_client.messages.create(
             model=MODEL,
