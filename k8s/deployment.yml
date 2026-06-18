@@ -35,10 +35,15 @@ spec:
             - name: ANTHROPIC_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: anthropic-api-key
+                  name: aiops-secrets
                   key: ANTHROPIC_API_KEY
             - name: PROMETHEUS_URL
               value: "http://prometheus-kube-prometheus-prometheus.monitoring.svc:9090"
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: aiops-secrets
+                  key: DATABASE_URL
           resources:
             requests:
               cpu: 100m
