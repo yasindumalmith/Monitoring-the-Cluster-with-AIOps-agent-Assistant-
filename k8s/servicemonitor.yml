@@ -1,0 +1,18 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: ai-ops-assistant
+  namespace: monitoring
+  labels:
+    release: prometheusno
+spec:
+  namespaceSelector:
+    matchNames:
+      - ai-ops
+  selector:
+    matchLabels:
+      app: ai-ops-assistant
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 15s
