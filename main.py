@@ -8,6 +8,7 @@ from typing import Any
 from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 from agent import run_agent
+from database import get_db_connection
 from logging_config import configure_logging
 from metrics import requests_total, request_duration
 
@@ -58,6 +59,22 @@ async def chat(req: ChatRequest, request: Request):
     try:
         answer, _, tool_calls = run_agent(messages, request_id)
         requests_total.labels(status="ok").inc()
+
+        # Save to PostgreSQL Database
+        user_question = req.messages[-1].content if req.messages else ""
+        with get_db_connection() as conn:
+            if conn:
+                try:
+                    cursor = conn.cursor()
+                    cursor.execute(
+                        "INSERT INTO conversations (request_id, question, answer) VALUES (%s, %s, %s)",
+                        (request_id, str(user_question), answer)
+                    )
+                    conn.commit()
+                    log.info("db.insert.success", table="conversations", request_id=request_id)
+                except Exception as e:
+                    log.error("db.insert.error", error=str(e))
+
         return ChatResponse(request_id=request_id, content=answer, tool_calls=tool_calls)
     except Exception as e:
         requests_total.labels(status="error").inc()
