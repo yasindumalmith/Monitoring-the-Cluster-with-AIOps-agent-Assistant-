@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: ai-ops
+spec:
+  ports:
+    - port: 5432
+  selector:
+    app: postgres
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: ai-ops
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+        - name: postgres
+          image: postgres:15-alpine
+          env:
+            - name: POSTGRES_USER
+              value: aiops_user
+            - name: POSTGRES_PASSWORD
+              value: aiops_password
+            - name: POSTGRES_DB
+              value: aiops_db
+          ports:
+            - containerPort: 5432
+          # WARNING: This is a basic setup. In production, you MUST mount a PersistentVolume 
+          # here so data isn't lost if the database pod restarts!
