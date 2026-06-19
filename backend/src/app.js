@@ -10,8 +10,8 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
-const userRoutes = require('./routes/users');
-app.use('/api/users', userRoutes);
+const authRoutes = require('./routes/auth');
+app.use('/auth', authRoutes);
 
 // Basic health check
 app.get('/healthz', (req, res) => {
