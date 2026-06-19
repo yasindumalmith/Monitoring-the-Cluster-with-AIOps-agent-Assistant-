@@ -222,3 +222,8 @@ k8s/secret.yml
 secret*.yml
 *secret*.yaml
 *secret*.yml
+
+# Node.js
+node_modules/
+backend/node_modules/
+backend/.env
