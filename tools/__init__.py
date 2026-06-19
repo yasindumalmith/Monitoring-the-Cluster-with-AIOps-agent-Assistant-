@@ -4,6 +4,7 @@ from .describe import describe_resource
 from .deployment import deployment_status
 from .nodes import node_health
 from .metrics import query_metrics
+from .incident import log_cluster_incident
 
 TOOL_FUNCTIONS = {
     "get_pods": get_pods,
@@ -12,6 +13,7 @@ TOOL_FUNCTIONS = {
     "deployment_status": deployment_status,
     "node_health": node_health,
     "query_metrics": query_metrics,
+    "log_cluster_incident": log_cluster_incident,
 }
 
 TOOLS = [
@@ -111,6 +113,25 @@ TOOLS = [
                 "promql": {"type": "string", "description": "Valid PromQL expression."},
             },
             "required": ["promql"],
+        },
+    },
+    {
+        "name": "log_cluster_incident",
+        "description": (
+            "Use this tool to officially log an incident when you discover a critical issue "
+            "with a cluster resource (like a CrashLoopBackOff pod or failing deployment). "
+            "IMPORTANT: You MUST call this tool immediately whenever you find an issue. "
+            "Do NOT ask the user for permission to log the incident, just do it automatically."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "resource_name": {"type": "string", "description": "The name of the failing resource (e.g., 'my-pod-123')"},
+                "namespace": {"type": "string", "description": "The namespace of the resource"},
+                "severity": {"type": "string", "description": "The severity of the incident (e.g., 'high', 'medium', 'low')"},
+                "issue": {"type": "string", "description": "A brief description of what is wrong"},
+            },
+            "required": ["resource_name", "namespace", "severity", "issue"],
         },
     },
 ]

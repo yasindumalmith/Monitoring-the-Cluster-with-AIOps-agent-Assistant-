@@ -94,18 +94,20 @@ def run_agent(messages: list, request_id: str = None) -> tuple[str, list, list]:
                     console.print(f"[dim]  ↳ {preview}{'...' if len(preview) >= 150 else ''}[/dim]")
                     
                     
+                    duration_ms = int((time.time() - start) * 1000)
                     tool_calls_total.labels(tool=block.name, status=status).inc()
                     log.info("tool.call",
                              request_id=request_id,
                              tool=block.name,
                              input=block.input,
                              status=status,
-                             duration_ms=int((time.time() - start) * 1000))
+                             duration_ms=duration_ms)
 
                     agent_tool_calls.append({
                         "tool": block.name,
                         "input": block.input,
-                        "result": result
+                        "result": result,
+                        "duration_ms": duration_ms
                     })
 
                     tool_results.append({

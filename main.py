@@ -1,5 +1,6 @@
 import time
 import uuid
+import json
 import structlog
 from fastapi import FastAPI, Request
 from fastapi.responses import Response
@@ -70,8 +71,32 @@ async def chat(req: ChatRequest, request: Request):
                         "INSERT INTO conversations (request_id, question, answer) VALUES (%s, %s, %s)",
                         (request_id, str(user_question), answer)
                     )
+                    
+                    # Insert tool calls and catch any incidents
+                    for tc in tool_calls:
+                        if isinstance(tc, BaseModel):
+                            tc = tc.model_dump()
+                            
+                        tool_name = tc.get("tool")
+                        input_json = json.dumps(tc.get("input", {}))
+                        output_json = json.dumps(tc.get("result", {}))
+                        duration_ms = tc.get("duration_ms", 0)
+
+                        cursor.execute(
+                            "INSERT INTO tool_calls (request_id, tool_name, input_json, output_json, duration_ms) VALUES (%s, %s, %s, %s, %s)",
+                            (request_id, tool_name, input_json, output_json, duration_ms)
+                        )
+                        
+                        if tool_name == "log_cluster_incident":
+                            inp = tc.get("input", {})
+                            cursor.execute(
+                                "INSERT INTO incidents (resource_name, namespace, severity, issue) VALUES (%s, %s, %s, %s)",
+                                (inp.get("resource_name"), inp.get("namespace"), inp.get("severity"), inp.get("issue"))
+                            )
+                            log.info("db.incident.logged", resource=inp.get("resource_name"))
+                            
                     conn.commit()
-                    log.info("db.insert.success", table="conversations", request_id=request_id)
+                    log.info("db.insert.success", request_id=request_id)
                 except Exception as e:
                     log.error("db.insert.error", error=str(e))
 
