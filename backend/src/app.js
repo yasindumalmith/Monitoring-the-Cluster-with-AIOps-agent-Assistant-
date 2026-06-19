@@ -12,9 +12,11 @@ app.use(express.json());
 // Routes
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
+const adminRoutes = require('./routes/admin');
 
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
+app.use('/admin', adminRoutes);
 
 // Basic health check
 app.get('/healthz', (req, res) => {
