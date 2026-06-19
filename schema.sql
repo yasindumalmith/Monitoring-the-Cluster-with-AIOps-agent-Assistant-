@@ -2,6 +2,8 @@
 CREATE TABLE conversations (
     id SERIAL PRIMARY KEY,
     request_id UUID,
+    user_id INTEGER,
+    user_role TEXT,
     question TEXT,
     answer TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -21,6 +23,7 @@ CREATE TABLE tool_calls (
 -- Table for tracking cluster incidents
 CREATE TABLE incidents (
     id SERIAL PRIMARY KEY,
+    detected_by_user_id INTEGER,
     resource_name TEXT,
     namespace TEXT,
     severity TEXT,

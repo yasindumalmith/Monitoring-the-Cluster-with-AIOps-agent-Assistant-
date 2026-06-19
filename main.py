@@ -25,6 +25,8 @@ class Message(BaseModel):
 
 
 class ChatRequest(BaseModel):
+    user_id: int
+    role: str
     messages: list[Message]
 
 
@@ -68,8 +70,8 @@ async def chat(req: ChatRequest, request: Request):
                 try:
                     cursor = conn.cursor()
                     cursor.execute(
-                        "INSERT INTO conversations (request_id, question, answer) VALUES (%s, %s, %s)",
-                        (request_id, str(user_question), answer)
+                        "INSERT INTO conversations (request_id, user_id, user_role, question, answer) VALUES (%s, %s, %s, %s, %s)",
+                        (request_id, req.user_id, req.role, str(user_question), answer)
                     )
                     
                     # Insert tool calls and catch any incidents
@@ -90,8 +92,8 @@ async def chat(req: ChatRequest, request: Request):
                         if tool_name == "log_cluster_incident":
                             inp = tc.get("input", {})
                             cursor.execute(
-                                "INSERT INTO incidents (resource_name, namespace, severity, issue) VALUES (%s, %s, %s, %s)",
-                                (inp.get("resource_name"), inp.get("namespace"), inp.get("severity"), inp.get("issue"))
+                                "INSERT INTO incidents (detected_by_user_id, resource_name, namespace, severity, issue) VALUES (%s, %s, %s, %s, %s)",
+                                (req.user_id, inp.get("resource_name"), inp.get("namespace"), inp.get("severity"), inp.get("issue"))
                             )
                             log.info("db.incident.logged", resource=inp.get("resource_name"))
                             
