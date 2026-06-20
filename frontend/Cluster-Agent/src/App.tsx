@@ -113,7 +113,12 @@ function Chat() {
       const aiMsg: Message = { 
         id: (Date.now() + 1).toString(), 
         role: 'assistant', 
-        content: `I've analyzed the cluster for: **"${text}"**.\n\nAll systems appear nominal, but I found some warnings in the \`kube-system\` namespace.\n\nWould you like me to fetch the detailed logs?` 
+        content: `I've analyzed the cluster for: **"${text}"**.\n\nAll systems appear nominal, but I found some warnings in the \`kube-system\` namespace.\n\nWould you like me to fetch the detailed logs?`,
+        tool_calls: [
+          { id: 't1', name: 'get_pods', result: { namespace: 'kube-system', count: 14, unhealthy: 2 } },
+          { id: 't2', name: 'describe_resource', result: { kind: 'Pod', name: 'coredns-6d4b75cb6d-8bz9v', status: 'CrashLoopBackOff', restartCount: 96 } },
+          { id: 't3', name: 'log_cluster_incident', result: { success: true, incidentId: 'INC-9042' } }
+        ]
       };
       setMessages(prev => [...prev, aiMsg]);
       setIsTyping(false);

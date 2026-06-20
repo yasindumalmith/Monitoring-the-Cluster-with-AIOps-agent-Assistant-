@@ -1,10 +1,18 @@
 import { Bot, User } from 'lucide-react';
 import ReactMarkdown from 'react-markdown';
+import { ToolExecutionPanel } from './ToolExecutionPanel';
+
+export interface ToolCall {
+  id: string;
+  name: string;
+  result: any;
+}
 
 export interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
+  tool_calls?: ToolCall[];
 }
 
 interface ChatMessageProps {
@@ -28,6 +36,10 @@ export function ChatMessage({ message }: ChatMessageProps) {
         <div className="prose prose-invert prose-purple max-w-none text-slate-200 leading-relaxed">
           <ReactMarkdown>{message.content}</ReactMarkdown>
         </div>
+        
+        {message.tool_calls && message.tool_calls.length > 0 && (
+          <ToolExecutionPanel tools={message.tool_calls} />
+        )}
       </div>
     </div>
   );
