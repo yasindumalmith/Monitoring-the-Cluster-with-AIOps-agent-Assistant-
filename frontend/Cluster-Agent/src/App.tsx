@@ -4,6 +4,7 @@ import { NavBar } from './components/common/NavBar';
 import { Sidebar } from './components/common/Sidebar';
 import { Loader } from './components/common/Loader';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
+import { ChatWindow } from './components/chat/ChatWindow';
 
 function LandingPage() {
   return (
@@ -93,10 +94,19 @@ function Register() {
 }
 
 function Chat() {
+  const sampleMessages = [
+    { id: '1', role: 'user' as const, content: 'Check failing pods' },
+    { id: '2', role: 'assistant' as const, content: 'Found a CrashLoopBackOff pod in the default namespace:\n\n### Problem Pod\n- **Name:** `frontend-deployment-85b8f6...`\n- **Restart count:** 96\n- **Status:** CrashLoopBackOff\n\nWould you like me to fetch the logs?' },
+    { id: '3', role: 'user' as const, content: 'Show logs' },
+    { id: '4', role: 'assistant' as const, content: 'Here are the recent logs for that pod:\n\n```text\nError: ENOSPC: no space left on device, write\n    at Object.writeSync (fs.js:738:20)\n```\n\nI recommend expanding the persistent volume claim.' },
+  ];
+
   return (
-    <div className="min-h-screen p-8 bg-slate-950 text-white">
-      <h1 className="text-2xl font-bold mb-4">AIOps Chat Interface</h1>
-      <Link to="/" className="text-indigo-400 hover:text-indigo-300">← Back Home</Link>
+    <div className="h-full max-h-[calc(100vh-8rem)] flex flex-col bg-[#1a0b2e]/30 border border-purple-900/30 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(128,90,213,0.05)]">
+      <div className="px-6 py-4 border-b border-purple-900/30 bg-purple-950/20 flex items-center justify-between">
+        <h1 className="text-lg font-bold text-white tracking-wide">AIOps Diagnostic Chat</h1>
+      </div>
+      <ChatWindow messages={sampleMessages} />
     </div>
   );
 }
