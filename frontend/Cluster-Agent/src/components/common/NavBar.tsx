@@ -55,7 +55,13 @@ export function NavBar({ user, incidentCount }: NavBarProps) {
                 </div>
 
                 {/* Logout Button */}
-                <button className="flex items-center gap-2 ml-4 text-sm font-medium text-purple-300 hover:text-red-400 transition-colors">
+                <button 
+                  onClick={() => {
+                    localStorage.removeItem('token');
+                    window.location.href = '/login';
+                  }}
+                  className="flex items-center gap-2 ml-4 text-sm font-medium text-purple-300 hover:text-red-400 transition-colors"
+                >
                   <LogOut className="h-4 w-4" />
                   <span className="hidden sm:inline">Logout</span>
                 </button>

@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { NavBar } from './components/common/NavBar';
 import { Sidebar } from './components/common/Sidebar';
 import { Loader } from './components/common/Loader';
+import { ProtectedRoute } from './components/common/ProtectedRoute';
 
 function LandingPage() {
   return (
@@ -25,9 +26,12 @@ function Login() {
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate backend delay
+    // Simulate backend delay and successful JWT verification
     setTimeout(() => {
       setIsLoading(false);
+      localStorage.setItem('token', 'simulated-jwt-token');
+      // Redirect to dashboard (force reload to pick up localStorage change in App state)
+      window.location.href = '/dashboard';
     }, 2000);
   };
 
@@ -98,10 +102,14 @@ function Chat() {
 }
 
 function App() {
-  const mockUser = {
+  // Check if user is authenticated via JWT in localStorage
+  const isAuthenticated = !!localStorage.getItem('token');
+  
+  // If authenticated, populate mockUser. Otherwise, keep it null.
+  const mockUser = isAuthenticated ? {
     name: 'Yasindu',
     role: 'DevOps'
-  };
+  } : null;
 
   return (
     <Router>
@@ -113,17 +121,18 @@ function App() {
           
           <main className="flex-1 overflow-y-auto p-8">
             <Routes>
+              {/* Public Routes */}
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route path="/chat" element={<Chat />} />
               
-              {/* Sidebar Placeholder Routes */}
-              <Route path="/dashboard" element={<div className="text-white text-2xl font-bold">Dashboard Placeholder</div>} />
-              <Route path="/incidents" element={<div className="text-white text-2xl font-bold">Incidents Placeholder</div>} />
-              <Route path="/metrics" element={<div className="text-white text-2xl font-bold">Metrics Placeholder</div>} />
-              <Route path="/users" element={<div className="text-white text-2xl font-bold">Users Placeholder</div>} />
-              <Route path="/profile" element={<div className="text-white text-2xl font-bold">Profile Placeholder</div>} />
+              {/* Protected Routes */}
+              <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+              <Route path="/dashboard" element={<ProtectedRoute><div className="text-white text-2xl font-bold">Dashboard Placeholder</div></ProtectedRoute>} />
+              <Route path="/incidents" element={<ProtectedRoute><div className="text-white text-2xl font-bold">Incidents Placeholder</div></ProtectedRoute>} />
+              <Route path="/metrics" element={<ProtectedRoute><div className="text-white text-2xl font-bold">Metrics Placeholder</div></ProtectedRoute>} />
+              <Route path="/users" element={<ProtectedRoute><div className="text-white text-2xl font-bold">Users Placeholder</div></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><div className="text-white text-2xl font-bold">Profile Placeholder</div></ProtectedRoute>} />
             </Routes>
           </main>
         </div>
