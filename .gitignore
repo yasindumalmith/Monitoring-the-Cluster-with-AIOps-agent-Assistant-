@@ -229,9 +229,9 @@ backend/node_modules/
 backend/.env
 
 # Frontend
-frontend/node_modules/
-frontend/dist/
-frontend/dist-ssr/
-frontend/.env
-frontend/.env.*
-frontend/.eslintcache
+frontend/Cluster-Agent/node_modules/
+frontend/Cluster-Agent/dist/
+frontend/Cluster-Agent/dist-ssr/
+frontend/Cluster-Agent/.env
+frontend/Cluster-Agent/.env.*
+frontend/Cluster-Agent/.eslintcache
