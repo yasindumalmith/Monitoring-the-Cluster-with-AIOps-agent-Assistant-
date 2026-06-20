@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { NavBar } from './components/common/NavBar';
+import { Sidebar } from './components/common/Sidebar';
 
 function LandingPage() {
   return (
@@ -53,14 +54,26 @@ function App() {
     <Router>
       <div className="min-h-screen bg-slate-950 flex flex-col">
         <NavBar user={mockUser} incidentCount={3} />
-        <main className="flex-1">
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/chat" element={<Chat />} />
-          </Routes>
-        </main>
+        
+        <div className="flex flex-1 overflow-hidden">
+          {mockUser && <Sidebar userRole={mockUser.role} />}
+          
+          <main className="flex-1 overflow-y-auto p-8">
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/chat" element={<Chat />} />
+              
+              {/* Sidebar Placeholder Routes */}
+              <Route path="/dashboard" element={<div className="text-white text-2xl font-bold">Dashboard Placeholder</div>} />
+              <Route path="/incidents" element={<div className="text-white text-2xl font-bold">Incidents Placeholder</div>} />
+              <Route path="/metrics" element={<div className="text-white text-2xl font-bold">Metrics Placeholder</div>} />
+              <Route path="/users" element={<div className="text-white text-2xl font-bold">Users Placeholder</div>} />
+              <Route path="/profile" element={<div className="text-white text-2xl font-bold">Profile Placeholder</div>} />
+            </Routes>
+          </main>
+        </div>
       </div>
     </Router>
   );
