@@ -1,20 +1,36 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Loader } from '../components/common/Loader';
+import { registerUser } from '../api/auth';
 
 export function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [fullName, setFullName] = useState('');
+  const [email, setEmail] = useState('');
+  const [role, setRole] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate backend delay and successful registration
-    setTimeout(() => {
-      setIsLoading(false);
-      localStorage.setItem('token', 'simulated-jwt-token');
-      // Redirect to dashboard
+    setError(null);
+
+    try {
+      const data = await registerUser({ fullName, email, role, password });
+
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      } else {
+        localStorage.setItem('token', 'simulated-jwt-token');
+      }
+      
       window.location.href = '/dashboard';
-    }, 2000);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -26,6 +42,13 @@ export function RegisterPage() {
         ) : (
           <>
             <h1 className="text-3xl font-bold mb-8 text-white text-center">Create Account</h1>
+            
+            {error && (
+              <div className="mb-6 p-3 bg-red-500/10 border border-red-500/50 rounded-lg text-red-400 text-sm text-center">
+                {error}
+              </div>
+            )}
+            
             <form onSubmit={handleRegister} className="space-y-6">
               <div>
                 <label className="block text-purple-300 mb-2 text-sm font-medium">Full Name</label>
@@ -33,6 +56,8 @@ export function RegisterPage() {
                   type="text" 
                   className="w-full px-4 py-3 bg-slate-950/50 border border-purple-900/50 rounded-lg text-white focus:outline-none focus:border-purple-500 transition-colors"
                   placeholder="John Doe"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                   required
                 />
               </div>
@@ -42,6 +67,8 @@ export function RegisterPage() {
                   type="email" 
                   className="w-full px-4 py-3 bg-slate-950/50 border border-purple-900/50 rounded-lg text-white focus:outline-none focus:border-purple-500 transition-colors"
                   placeholder="devops@aiops.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                 />
               </div>
@@ -50,7 +77,8 @@ export function RegisterPage() {
                 <select 
                   className="w-full px-4 py-3 bg-slate-950/50 border border-purple-900/50 rounded-lg text-white focus:outline-none focus:border-purple-500 transition-colors appearance-none"
                   required
-                  defaultValue=""
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
                 >
                   <option value="" disabled>Select your role</option>
                   <option value="Admin">Admin</option>
@@ -64,6 +92,8 @@ export function RegisterPage() {
                   type="password" 
                   className="w-full px-4 py-3 bg-slate-950/50 border border-purple-900/50 rounded-lg text-white focus:outline-none focus:border-purple-500 transition-colors"
                   placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                 />
               </div>
