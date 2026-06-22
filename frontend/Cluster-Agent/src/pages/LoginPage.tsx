@@ -19,7 +19,7 @@ export function LoginPage() {
 
   return (
     <div className="max-w-md mx-auto mt-20 w-full">
-      <div className="p-8 bg-[#1a0b2e]/50 border border-purple-900/50 rounded-2xl shadow-[0_0_30px_rgba(128,90,213,0.1)]">
+      <div className="p-8 bg-[#040d24]/50 border border-purple-900/50 rounded-2xl shadow-[0_0_30px_rgba(128,90,213,0.1)]">
         
         {isLoading ? (
           <Loader message="Authenticating with backend..." size="md" />

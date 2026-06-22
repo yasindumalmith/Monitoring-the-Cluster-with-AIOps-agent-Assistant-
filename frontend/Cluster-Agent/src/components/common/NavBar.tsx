@@ -11,7 +11,7 @@ interface NavBarProps {
 
 export function NavBar({ user, incidentCount }: NavBarProps) {
   return (
-    <nav className="border-b border-purple-900/50 bg-[#1a0b2e]/80 backdrop-blur-md sticky top-0 z-50 shadow-[0_4px_30px_rgba(128,90,213,0.1)]">
+    <nav className="border-b border-purple-900/50 bg-[#040d24]/80 backdrop-blur-md sticky top-0 z-50 shadow-[0_4px_30px_rgba(128,90,213,0.1)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           
@@ -40,7 +40,7 @@ export function NavBar({ user, incidentCount }: NavBarProps) {
                 <button className="relative p-2 text-purple-300 hover:text-white transition-colors group">
                   <Bell className="h-5 w-5 group-hover:scale-110 transition-transform" />
                   {incidentCount > 0 && (
-                    <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-[#1a0b2e]">
+                    <span className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-[#040d24]">
                       {incidentCount}
                     </span>
                   )}

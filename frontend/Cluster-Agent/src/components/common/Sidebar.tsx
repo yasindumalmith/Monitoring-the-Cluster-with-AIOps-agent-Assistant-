@@ -31,7 +31,7 @@ export function Sidebar({ userRole }: SidebarProps) {
   const allowedItems = MENU_ITEMS.filter(item => item.roles.includes(roleLower));
 
   return (
-    <aside className="w-64 bg-[#1a0b2e]/30 border-r border-purple-900/30 min-h-[calc(100vh-4rem)] shadow-[4px_0_24px_rgba(128,90,213,0.05)]">
+    <aside className="w-64 bg-[#040d24]/30 border-r border-purple-900/30 min-h-[calc(100vh-4rem)] shadow-[4px_0_24px_rgba(128,90,213,0.05)]">
       <div className="p-4 space-y-2">
         {allowedItems.map((item) => {
           const isActive = location.pathname === item.path;

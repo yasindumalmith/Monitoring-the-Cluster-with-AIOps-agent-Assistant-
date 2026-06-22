@@ -16,7 +16,7 @@ export function ToolExecutionPanel({ tools }: ToolExecutionPanelProps) {
   };
 
   return (
-    <div className="mt-5 bg-[#1a0b2e]/60 border border-purple-900/40 rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(128,90,213,0.05)]">
+    <div className="mt-5 bg-[#040d24]/60 border border-purple-900/40 rounded-xl overflow-hidden shadow-[0_4px_20px_rgba(128,90,213,0.05)]">
       {/* Header */}
       <div className="flex items-center gap-2 px-4 py-2.5 bg-purple-950/40 border-b border-purple-900/40 text-purple-300">
         <Terminal size={14} className="opacity-80" />

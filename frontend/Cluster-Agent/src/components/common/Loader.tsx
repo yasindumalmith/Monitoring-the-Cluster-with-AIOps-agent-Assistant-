@@ -33,7 +33,7 @@ export function Loader({ message = "Loading...", fullScreen = false, size = 'md'
 
   if (fullScreen) {
     return (
-      <div className="fixed inset-0 bg-[#1a0b2e]/80 backdrop-blur-sm z-[100] flex items-center justify-center">
+      <div className="fixed inset-0 bg-[#040d24]/80 backdrop-blur-sm z-[100] flex items-center justify-center">
         {content}
       </div>
     );

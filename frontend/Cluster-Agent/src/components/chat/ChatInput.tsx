@@ -30,7 +30,7 @@ export function ChatInput({ onSendMessage, isLoading }: ChatInputProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="p-4 border-t border-purple-900/30 bg-[#1a0b2e]/80 backdrop-blur-md">
+    <form onSubmit={handleSubmit} className="p-4 border-t border-purple-900/30 bg-[#040d24]/80 backdrop-blur-md">
       <div className="relative flex items-center max-w-4xl mx-auto">
         <textarea
           ref={textareaRef}

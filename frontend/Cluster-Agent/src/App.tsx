@@ -57,7 +57,7 @@ function Chat() {
   };
 
   return (
-    <div className="h-full max-h-[calc(100vh-8rem)] flex flex-col bg-[#1a0b2e]/30 border border-purple-900/30 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(128,90,213,0.05)]">
+    <div className="h-full max-h-[calc(100vh-8rem)] flex flex-col bg-[#040d24]/30 border border-purple-900/30 rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(128,90,213,0.05)]">
       <div className="px-6 py-4 border-b border-purple-900/30 bg-purple-950/20 flex items-center justify-between">
         <h1 className="text-lg font-bold text-white tracking-wide">AIOps Diagnostic Chat</h1>
       </div>
