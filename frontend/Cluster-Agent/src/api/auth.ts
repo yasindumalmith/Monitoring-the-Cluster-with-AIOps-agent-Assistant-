@@ -27,3 +27,24 @@ export const registerUser = async (data: RegisterData) => {
 
   return result;
 };
+
+export interface LoginData {
+  email?: string;
+  password?: string;
+}
+
+export const loginUser = async (data: LoginData) => {
+  const response = await fetch(`${API_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.error || result.message || 'Login failed');
+  }
+
+  return result;
+};
