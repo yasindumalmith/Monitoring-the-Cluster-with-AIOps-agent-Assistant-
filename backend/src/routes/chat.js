@@ -1,6 +1,15 @@
 const express = require('express');
 const router = express.Router();
 const verifyToken = require('../middleware/authMiddleware');
+const chatController = require('../controllers/chatController');
+
+// GET /chat/history
+// Fetch the distinct chat sessions for the authenticated user (for the sidebar)
+router.get('/history', verifyToken, chatController.getChatHistory);
+
+// GET /chat/history/:chatId
+// Fetch all messages for a specific chat session (to display in the chat window)
+router.get('/history/:chatId', verifyToken, chatController.getChatSession);
 
 // POST /chat
 // Proxies the request to the Python AI Agent after attaching user context
