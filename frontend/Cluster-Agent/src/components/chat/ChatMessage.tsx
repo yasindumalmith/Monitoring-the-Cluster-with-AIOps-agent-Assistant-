@@ -1,5 +1,4 @@
 import { Bot, User } from 'lucide-react';
-import ReactMarkdown from 'react-markdown';
 import { ToolExecutionPanel } from './ToolExecutionPanel';
 
 export interface ToolCall {
@@ -33,9 +32,16 @@ export function ChatMessage({ message }: ChatMessageProps) {
         <p className={`font-semibold text-sm tracking-wide mb-2 ${isAI ? 'text-purple-400' : 'text-slate-400'}`}>
           {isAI ? 'AIOps Assistant' : 'You'}
         </p>
-        <div className="prose prose-invert prose-purple max-w-none text-slate-200 leading-relaxed">
-          <ReactMarkdown>{message.content}</ReactMarkdown>
-        </div>
+        {isAI ? (
+          <div 
+            className="prose prose-invert prose-purple max-w-none text-slate-200 leading-relaxed"
+            dangerouslySetInnerHTML={{ __html: message.content }}
+          />
+        ) : (
+          <div className="prose prose-invert prose-purple max-w-none text-slate-200 leading-relaxed">
+            {message.content}
+          </div>
+        )}
         
         {message.tool_calls && message.tool_calls.length > 0 && (
           <ToolExecutionPanel tools={message.tool_calls} />

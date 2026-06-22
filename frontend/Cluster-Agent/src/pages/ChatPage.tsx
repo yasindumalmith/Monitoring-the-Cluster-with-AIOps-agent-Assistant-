@@ -2,35 +2,41 @@ import { useState } from 'react';
 import { ChatWindow } from '../components/chat/ChatWindow';
 import { ChatInput } from '../components/chat/ChatInput';
 import type { Message } from '../components/chat/ChatMessage';
-
+import { ChatService } from '../services/ChatService';
 export function ChatPage() {
   const [messages, setMessages] = useState<Message[]>([
     { id: '1', role: 'assistant', content: 'Hello! I am your AIOps Assistant. How can I help you diagnose the cluster today?' }
   ]);
   const [isTyping, setIsTyping] = useState(false);
 
-  const handleSendMessage = (text: string) => {
+  const handleSendMessage = async (text: string) => {
     // 1. Add user message instantly
     const userMsg: Message = { id: Date.now().toString(), role: 'user', content: text };
-    setMessages(prev => [...prev, userMsg]);
+    const updatedMessages = [...messages, userMsg];
+    setMessages(updatedMessages);
     setIsTyping(true);
 
-    // 2. Simulate POST /chat API call
-    setTimeout(() => {
-      // 3. Receive and add AI response
-      const aiMsg: Message = { 
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) throw new Error('No authentication token found');
+
+      // 2. Call the ChatService to handle all the complex payload mapping
+      const aiResponse = await ChatService.sendMessage(updatedMessages, token);
+      
+      // 3. Receive and add the clean AI response directly to state
+      setMessages(prev => [...prev, aiResponse]);
+    } catch (error) {
+      console.error('Failed to get AI response:', error);
+      // Optionally add an error message to the chat
+      const errorMsg: Message = { 
         id: (Date.now() + 1).toString(), 
         role: 'assistant', 
-        content: `I've analyzed the cluster for: **"${text}"**.\n\nAll systems appear nominal, but I found some warnings in the \`kube-system\` namespace.\n\nWould you like me to fetch the detailed logs?`,
-        tool_calls: [
-          { id: 't1', name: 'get_pods', result: { namespace: 'kube-system', count: 14, unhealthy: 2 } },
-          { id: 't2', name: 'describe_resource', result: { kind: 'Pod', name: 'coredns-6d4b75cb6d-8bz9v', status: 'CrashLoopBackOff', restartCount: 96 } },
-          { id: 't3', name: 'log_cluster_incident', result: { success: true, incidentId: 'INC-9042' } }
-        ]
+        content: '**Error:** Failed to communicate with the AIOps agent.' 
       };
-      setMessages(prev => [...prev, aiMsg]);
+      setMessages(prev => [...prev, errorMsg]);
+    } finally {
       setIsTyping(false);
-    }, 2500); // 2.5 second delay
+    }
   };
 
   return (
