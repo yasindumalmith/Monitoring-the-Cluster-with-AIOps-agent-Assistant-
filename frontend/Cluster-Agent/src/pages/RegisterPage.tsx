@@ -46,6 +46,19 @@ export function RegisterPage() {
                 />
               </div>
               <div>
+                <label className="block text-purple-300 mb-2 text-sm font-medium">Role</label>
+                <select 
+                  className="w-full px-4 py-3 bg-slate-950/50 border border-purple-900/50 rounded-lg text-white focus:outline-none focus:border-purple-500 transition-colors appearance-none"
+                  required
+                  defaultValue=""
+                >
+                  <option value="" disabled>Select your role</option>
+                  <option value="Admin">Admin</option>
+                  <option value="DevOps">DevOps</option>
+                  <option value="Developer">Developer</option>
+                </select>
+              </div>
+              <div>
                 <label className="block text-purple-300 mb-2 text-sm font-medium">Password</label>
                 <input 
                   type="password" 
