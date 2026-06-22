@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Outlet } from 'react-router-dom';
 import { useState } from 'react';
 import { NavBar } from './components/common/NavBar';
 import { Sidebar } from './components/common/Sidebar';
@@ -6,24 +6,11 @@ import { Loader } from './components/common/Loader';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
 import { ChatWindow } from './components/chat/ChatWindow';
 import { ChatInput } from './components/chat/ChatInput';
+import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import type { Message } from './components/chat/ChatMessage';
 
-function LandingPage() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-6">AIOps Agent Assistant</h1>
-        <div className="flex justify-center gap-6">
-          <Link to="/login" className="text-indigo-400 hover:text-indigo-300 underline underline-offset-4">Login</Link>
-          <Link to="/register" className="text-indigo-400 hover:text-indigo-300 underline underline-offset-4">Register</Link>
-          <Link to="/chat" className="text-indigo-400 hover:text-indigo-300 underline underline-offset-4">Chat Interface</Link>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 
 function Chat() {
@@ -67,6 +54,22 @@ function Chat() {
   );
 }
 
+function MainLayout({ mockUser }: { mockUser: any }) {
+  return (
+    <div className="min-h-screen bg-slate-950 flex flex-col">
+      <NavBar user={mockUser} incidentCount={3} />
+      
+      <div className="flex flex-1 overflow-hidden">
+        {mockUser && <Sidebar userRole={mockUser.role} />}
+        
+        <main className="flex-1 overflow-y-auto p-8">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   // Check if user is authenticated via JWT in localStorage
   const isAuthenticated = !!localStorage.getItem('token');
@@ -79,30 +82,25 @@ function App() {
 
   return (
     <Router>
-      <div className="min-h-screen bg-slate-950 flex flex-col">
-        <NavBar user={mockUser} incidentCount={3} />
+      <Routes>
+        {/* Landing Page without Navbar/Sidebar */}
+        <Route path="/" element={<LandingPage />} />
         
-        <div className="flex flex-1 overflow-hidden">
-          {mockUser && <Sidebar userRole={mockUser.role} />}
+        {/* All other pages wrapped in MainLayout */}
+        <Route element={<MainLayout mockUser={mockUser} />}>
+          {/* Public Routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           
-          <main className="flex-1 overflow-y-auto p-8">
-            <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<RegisterPage />} />
-              
-              {/* Protected Routes */}
-              <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
-              <Route path="/dashboard" element={<ProtectedRoute><div className="text-white text-2xl font-bold">Dashboard Placeholder</div></ProtectedRoute>} />
-              <Route path="/incidents" element={<ProtectedRoute><div className="text-white text-2xl font-bold">Incidents Placeholder</div></ProtectedRoute>} />
-              <Route path="/metrics" element={<ProtectedRoute><div className="text-white text-2xl font-bold">Metrics Placeholder</div></ProtectedRoute>} />
-              <Route path="/users" element={<ProtectedRoute><div className="text-white text-2xl font-bold">Users Placeholder</div></ProtectedRoute>} />
-              <Route path="/profile" element={<ProtectedRoute><div className="text-white text-2xl font-bold">Profile Placeholder</div></ProtectedRoute>} />
-            </Routes>
-          </main>
-        </div>
-      </div>
+          {/* Protected Routes */}
+          <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute><div className="text-white text-2xl font-bold">Dashboard Placeholder</div></ProtectedRoute>} />
+          <Route path="/incidents" element={<ProtectedRoute><div className="text-white text-2xl font-bold">Incidents Placeholder</div></ProtectedRoute>} />
+          <Route path="/metrics" element={<ProtectedRoute><div className="text-white text-2xl font-bold">Metrics Placeholder</div></ProtectedRoute>} />
+          <Route path="/users" element={<ProtectedRoute><div className="text-white text-2xl font-bold">Users Placeholder</div></ProtectedRoute>} />
+          <Route path="/profile" element={<ProtectedRoute><div className="text-white text-2xl font-bold">Profile Placeholder</div></ProtectedRoute>} />
+        </Route>
+      </Routes>
     </Router>
   );
 }
