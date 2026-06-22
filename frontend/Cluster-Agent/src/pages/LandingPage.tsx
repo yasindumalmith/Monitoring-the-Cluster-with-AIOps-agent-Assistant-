@@ -1,8 +1,28 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Bot, Activity, AlertTriangle, Box, ArrowRight } from 'lucide-react';
 import k8sLogo from '../assets/k8s.png';
 
 export function LandingPage() {
+  const [displayText, setDisplayText] = useState('');
+  const [isTypingComplete, setIsTypingComplete] = useState(false);
+  const fullText = "AI-Powered Kubernetes Operations Assistant";
+
+  useEffect(() => {
+    let currentIndex = 0;
+    const interval = setInterval(() => {
+      if (currentIndex <= fullText.length) {
+        setDisplayText(fullText.slice(0, currentIndex));
+        currentIndex++;
+      } else {
+        setIsTypingComplete(true);
+        clearInterval(interval);
+      }
+    }, 50);
+    
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="h-full w-full flex flex-col text-white overflow-y-auto custom-scrollbar">
       {/* Hero Section */}
@@ -14,8 +34,13 @@ export function LandingPage() {
           </div>
         </div>
 
-        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 max-w-4xl bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-100 to-purple-400">
-          AI-Powered Kubernetes Operations Assistant
+        <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight mb-6 max-w-4xl flex items-center justify-center flex-wrap min-h-[96px] md:min-h-[72px]">
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-purple-100 to-purple-400">
+            {displayText}
+          </span>
+          {!isTypingComplete && (
+            <span className="inline-block w-1 h-10 md:h-14 bg-purple-400 ml-1 md:ml-2 animate-[pulse_1s_ease-in-out_infinite]"></span>
+          )}
         </h1>
         
         <p className="text-lg md:text-xl text-slate-300 max-w-2xl mb-12 leading-relaxed">
