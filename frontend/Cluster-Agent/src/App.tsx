@@ -7,6 +7,7 @@ import { ProtectedRoute } from './components/common/ProtectedRoute';
 import { ChatWindow } from './components/chat/ChatWindow';
 import { ChatInput } from './components/chat/ChatInput';
 import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
 import type { Message } from './components/chat/ChatMessage';
 
 function LandingPage() {
@@ -24,15 +25,6 @@ function LandingPage() {
   );
 }
 
-
-function Register() {
-  return (
-    <div className="min-h-screen p-8 bg-slate-950 text-white">
-      <h1 className="text-2xl font-bold mb-4">Register Page</h1>
-      <Link to="/" className="text-indigo-400 hover:text-indigo-300">← Back Home</Link>
-    </div>
-  );
-}
 
 function Chat() {
   const [messages, setMessages] = useState<Message[]>([
@@ -98,7 +90,7 @@ function App() {
               {/* Public Routes */}
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<LoginPage />} />
-              <Route path="/register" element={<Register />} />
+              <Route path="/register" element={<RegisterPage />} />
               
               {/* Protected Routes */}
               <Route path="/chat" element={<ProtectedRoute><Chat /></ProtectedRoute>} />
