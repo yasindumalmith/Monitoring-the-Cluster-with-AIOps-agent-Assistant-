@@ -28,6 +28,7 @@ class ChatRequest(BaseModel):
     user_id: int
     role: str
     messages: list[Message]
+    chat_id: str | None = None
 
 
 class ToolCallData(BaseModel):
@@ -70,8 +71,8 @@ async def chat(req: ChatRequest, request: Request):
                 try:
                     cursor = conn.cursor()
                     cursor.execute(
-                        "INSERT INTO conversations (request_id, user_id, user_role, question, answer) VALUES (%s, %s, %s, %s, %s)",
-                        (request_id, req.user_id, req.role, str(user_question), answer)
+                        "INSERT INTO conversations (chat_id, request_id, user_id, user_role, question, answer) VALUES (%s, %s, %s, %s, %s, %s)",
+                        (req.chat_id, request_id, req.user_id, req.role, str(user_question), answer)
                     )
                     
                     # Insert tool calls and catch any incidents

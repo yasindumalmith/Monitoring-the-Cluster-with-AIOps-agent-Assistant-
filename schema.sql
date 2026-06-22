@@ -1,6 +1,7 @@
 -- Table for storing chat history
 CREATE TABLE conversations (
     id SERIAL PRIMARY KEY,
+    chat_id UUID,
     request_id UUID,
     user_id INTEGER,
     user_role TEXT,

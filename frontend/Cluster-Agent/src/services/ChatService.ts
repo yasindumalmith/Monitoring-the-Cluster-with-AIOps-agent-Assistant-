@@ -7,10 +7,10 @@ export class ChatService {
    * Sends a chat message to the AIOps backend and parses the complex Python 
    * response format into the streamlined Message interface required by the React UI.
    */
-  static async sendMessage(messages: Message[], token: string): Promise<Message> {
+  static async sendMessage(chatId: string, messages: Message[], token: string): Promise<Message> {
     try {
       // 1. Call the raw API which proxies to the Python AI Agent
-      const rawResponse = await sendChatMessage(messages, token);
+      const rawResponse = await sendChatMessage(chatId, messages, token);
 
       // 2. Safely parse and map tool_calls from Python format to UI format
       const toolCalls: ToolCall[] = (rawResponse.tool_calls || []).map((tc: any, index: number) => ({

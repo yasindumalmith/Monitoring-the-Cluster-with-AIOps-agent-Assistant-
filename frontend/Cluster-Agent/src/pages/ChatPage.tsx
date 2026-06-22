@@ -4,6 +4,7 @@ import { ChatInput } from '../components/chat/ChatInput';
 import type { Message } from '../components/chat/ChatMessage';
 import { ChatService } from '../services/ChatService';
 export function ChatPage() {
+  const [chatId] = useState(() => crypto.randomUUID());
   const [messages, setMessages] = useState<Message[]>([
     { id: '1', role: 'assistant', content: 'Hello! I am your AIOps Assistant. How can I help you diagnose the cluster today?' }
   ]);
@@ -21,7 +22,7 @@ export function ChatPage() {
       if (!token) throw new Error('No authentication token found');
 
       // 2. Call the ChatService to handle all the complex payload mapping
-      const aiResponse = await ChatService.sendMessage(updatedMessages, token);
+      const aiResponse = await ChatService.sendMessage(chatId, updatedMessages, token);
       
       // 3. Receive and add the clean AI response directly to state
       setMessages(prev => [...prev, aiResponse]);

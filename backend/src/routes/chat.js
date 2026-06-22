@@ -6,7 +6,7 @@ const verifyToken = require('../middleware/authMiddleware');
 // Proxies the request to the Python AI Agent after attaching user context
 router.post('/', verifyToken, async (req, res) => {
     try {
-        const { messages } = req.body;
+        const { messages, chat_id } = req.body;
         
         if (!messages || !Array.isArray(messages)) {
             return res.status(400).json({ error: 'Messages array is required' });
@@ -16,7 +16,8 @@ router.post('/', verifyToken, async (req, res) => {
         const payload = {
             user_id: req.user.userId,
             role: req.user.role,
-            messages: messages
+            messages: messages,
+            chat_id: chat_id
         };
 
         // Forward to Python AI Agent running on port 8000
