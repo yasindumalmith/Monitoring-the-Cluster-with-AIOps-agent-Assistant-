@@ -57,7 +57,7 @@ function Chat() {
 function MainLayout({ mockUser }: { mockUser: any }) {
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col">
-      <NavBar user={mockUser} incidentCount={3} />
+      <NavBar incidentCount={3} />
       
       <div className="flex flex-1 overflow-hidden">
         {mockUser && <Sidebar userRole={mockUser.role} />}

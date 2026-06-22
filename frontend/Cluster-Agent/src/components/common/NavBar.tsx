@@ -1,15 +1,29 @@
+import { useState, useEffect } from 'react';
 import { Bell, LogOut, User, Shield } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { getUserProfile } from '../../api/auth';
 
 interface NavBarProps {
-  user: {
-    name: string;
-    role: string;
-  } | null;
   incidentCount: number;
 }
 
-export function NavBar({ user, incidentCount }: NavBarProps) {
+export function NavBar({ incidentCount }: NavBarProps) {
+  const [user, setUser] = useState<{name: string, role: string} | null>(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      getUserProfile(token)
+        .then(data => {
+          // data structure as described: { id, name, email, role, created_at }
+          setUser(data);
+        })
+        .catch(err => {
+          console.error('Failed to fetch user profile:', err);
+        });
+    }
+  }, []);
+
   return (
     <nav className="border-b border-purple-900/50 bg-[#040d24]/80 backdrop-blur-md sticky top-0 z-50 shadow-[0_4px_30px_rgba(128,90,213,0.1)]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

@@ -48,3 +48,17 @@ export const loginUser = async (data: LoginData) => {
 
   return result;
 };
+
+export const getUserProfile = async (token: string) => {
+  const response = await fetch(`${API_URL}/users/me`, {
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+
+  const result = await response.json();
+
+  if (!response.ok) {
+    throw new Error(result.error || result.message || 'Failed to fetch user profile');
+  }
+
+  return result;
+};
