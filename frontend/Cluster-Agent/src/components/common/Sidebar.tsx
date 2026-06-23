@@ -1,5 +1,6 @@
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, MessageSquare, AlertTriangle, BarChart2, Users, UserCircle } from 'lucide-react';
+import { ChatHistory } from '../chat/ChatHistory';
 
 interface SidebarProps {
   userRole: string; // 'admin' | 'devops' | 'developer'
@@ -31,8 +32,8 @@ export function Sidebar({ userRole }: SidebarProps) {
   const allowedItems = MENU_ITEMS.filter(item => item.roles.includes(roleLower));
 
   return (
-    <aside className="w-64 bg-[#040d24]/30 border-r border-purple-900/30 min-h-[calc(100vh-4rem)] shadow-[4px_0_24px_rgba(128,90,213,0.05)]">
-      <div className="p-4 space-y-2">
+    <aside className="w-64 bg-[#040d24]/30 border-r border-purple-900/30 min-h-[calc(100vh-4rem)] shadow-[4px_0_24px_rgba(128,90,213,0.05)] flex flex-col">
+      <div className="p-4 space-y-2 shrink-0">
         {allowedItems.map((item) => {
           const isActive = location.pathname === item.path;
           const Icon = item.icon;
@@ -56,6 +57,15 @@ export function Sidebar({ userRole }: SidebarProps) {
             </Link>
           );
         })}
+      </div>
+
+      <div className="flex-1 overflow-hidden mt-2 flex flex-col">
+        <ChatHistory 
+          sessions={[]}
+          currentChatId=""
+          onSelectChat={(id) => console.log('Select chat:', id)}
+          onNewChat={() => console.log('New chat clicked')}
+        />
       </div>
     </aside>
   );
