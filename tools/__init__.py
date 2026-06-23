@@ -129,9 +129,10 @@ TOOLS = [
                 "resource_name": {"type": "string", "description": "The name of the failing resource (e.g., 'my-pod-123')"},
                 "namespace": {"type": "string", "description": "The namespace of the resource"},
                 "severity": {"type": "string", "description": "The severity of the incident (e.g., 'high', 'medium', 'low')"},
+                "issueType": {"type": "string", "description": "The specific type or category of the error (e.g., 'CrashLoopBackOff', 'ImagePullBackOff', 'OOMKilled')"},
                 "issue": {"type": "string", "description": "A brief description of what is wrong"},
             },
-            "required": ["resource_name", "namespace", "severity", "issue"],
+            "required": ["resource_name", "namespace", "severity", "issueType", "issue"],
         },
     },
 ]
