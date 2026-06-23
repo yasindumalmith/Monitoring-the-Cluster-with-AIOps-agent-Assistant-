@@ -1,6 +1,8 @@
+import { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { LayoutDashboard, MessageSquare, AlertTriangle, BarChart2, Users, UserCircle } from 'lucide-react';
 import { ChatHistory } from '../chat/ChatHistory';
+import { fetchChatHistory, type ChatSessionPreview } from '../../api/chat';
 
 interface SidebarProps {
   userRole: string; // 'admin' | 'devops' | 'developer'
@@ -24,6 +26,25 @@ const MENU_ITEMS: MenuItem[] = [
 
 export function Sidebar({ userRole }: SidebarProps) {
   const location = useLocation();
+  const [sessions, setSessions] = useState<ChatSessionPreview[]>([]);
+  
+  useEffect(() => {
+    const loadHistory = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          const data = await fetchChatHistory(token);
+          setSessions(data);
+        }
+      } catch (err) {
+        console.error("Failed to load history in sidebar", err);
+      }
+    };
+    
+    // Only fetch if they navigate to /chat or if we just want it globally available
+    // Here we load it whenever Sidebar mounts or token changes.
+    loadHistory();
+  }, []);
   
   // Normalize role to lowercase to easily match the roles array
   const roleLower = userRole.toLowerCase();
@@ -61,7 +82,7 @@ export function Sidebar({ userRole }: SidebarProps) {
 
       <div className="flex-1 overflow-hidden mt-2 flex flex-col">
         <ChatHistory 
-          sessions={[]}
+          sessions={sessions}
           currentChatId=""
           onSelectChat={(id) => console.log('Select chat:', id)}
           onNewChat={() => console.log('New chat clicked')}

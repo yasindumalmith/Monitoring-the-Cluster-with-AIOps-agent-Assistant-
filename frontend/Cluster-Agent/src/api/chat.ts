@@ -20,3 +20,26 @@ export const sendChatMessage = async (chatId: string, messages: Message[], token
 
   return result;
 };
+
+export interface ChatSessionPreview {
+  chat_id: string;
+  first_question: string;
+  last_activity: string;
+}
+
+export const fetchChatHistory = async (token: string): Promise<ChatSessionPreview[]> => {
+  const response = await fetch(`${API_URL}/chat/history`, {
+    method: 'GET',
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || 'Failed to fetch chat history');
+  }
+
+  return response.json();
+};
