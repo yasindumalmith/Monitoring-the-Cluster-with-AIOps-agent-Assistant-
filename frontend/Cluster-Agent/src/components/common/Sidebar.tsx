@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { LayoutDashboard, MessageSquare, AlertTriangle, BarChart2, Users, UserCircle } from 'lucide-react';
 import { ChatHistory } from '../chat/ChatHistory';
 import { fetchChatHistory, type ChatSessionPreview } from '../../api/chat';
@@ -26,6 +26,7 @@ const MENU_ITEMS: MenuItem[] = [
 
 export function Sidebar({ userRole }: SidebarProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const [sessions, setSessions] = useState<ChatSessionPreview[]>([]);
   
   useEffect(() => {
@@ -83,9 +84,9 @@ export function Sidebar({ userRole }: SidebarProps) {
       <div className="flex-1 overflow-hidden mt-2 flex flex-col">
         <ChatHistory 
           sessions={sessions}
-          currentChatId=""
-          onSelectChat={(id) => console.log('Select chat:', id)}
-          onNewChat={() => console.log('New chat clicked')}
+          currentChatId={new URLSearchParams(location.search).get('id') || ""}
+          onSelectChat={(id) => navigate(`/chat?id=${id}`)}
+          onNewChat={() => navigate(`/chat`)}
         />
       </div>
     </aside>

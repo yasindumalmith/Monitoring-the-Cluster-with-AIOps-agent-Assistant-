@@ -1,14 +1,48 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { ChatWindow } from '../components/chat/ChatWindow';
 import { ChatInput } from '../components/chat/ChatInput';
 import type { Message } from '../components/chat/ChatMessage';
 import { ChatService } from '../services/ChatService';
 export function ChatPage() {
-  const [chatId] = useState(() => crypto.randomUUID());
+  const [searchParams] = useSearchParams();
+  const queryChatId = searchParams.get('id');
+
+  const [chatId, setChatId] = useState(() => queryChatId || crypto.randomUUID());
   const [messages, setMessages] = useState<Message[]>([
     { id: '1', role: 'assistant', content: 'Hello! I am your AIOps Assistant. How can I help you diagnose the cluster today?' }
   ]);
   const [isTyping, setIsTyping] = useState(false);
+
+  useEffect(() => {
+    const loadSession = async () => {
+      if (!queryChatId) {
+        setChatId(crypto.randomUUID());
+        setMessages([{ id: '1', role: 'assistant', content: 'Hello! I am your AIOps Assistant. How can I help you diagnose the cluster today?' }]);
+        return;
+      }
+
+      setChatId(queryChatId);
+      setIsTyping(true);
+      try {
+        const token = localStorage.getItem('token');
+        if (token) {
+          const loadedMessages = await ChatService.loadChatSession(queryChatId, token);
+          if (loadedMessages.length > 0) {
+            setMessages(loadedMessages);
+          } else {
+            setMessages([{ id: '1', role: 'assistant', content: 'Hello! I am your AIOps Assistant. How can I help you diagnose the cluster today?' }]);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load chat", err);
+      } finally {
+        setIsTyping(false);
+      }
+    };
+    
+    loadSession();
+  }, [queryChatId]);
 
   const handleSendMessage = async (text: string) => {
     // 1. Add user message instantly

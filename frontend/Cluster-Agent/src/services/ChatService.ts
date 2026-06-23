@@ -1,4 +1,4 @@
-import { sendChatMessage } from '../api/chat';
+import { sendChatMessage, fetchChatSession } from '../api/chat';
 import type { Message, ToolCall } from '../components/chat/ChatMessage';
 import { marked } from 'marked';
 
@@ -33,6 +33,43 @@ export class ChatService {
       };
     } catch (error) {
       console.error('ChatService failed to process message:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Fetches an entire chat session and maps the database rows (question/answer)
+   * into the sequential UI Message[] format.
+   */
+  static async loadChatSession(chatId: string, token: string): Promise<Message[]> {
+    try {
+      const rawSession = await fetchChatSession(chatId, token);
+      const messages: Message[] = [];
+      
+      for (const row of rawSession) {
+        // Add User Question
+        if (row.question) {
+          messages.push({
+            id: `q-${row.id}`,
+            role: 'user',
+            content: row.question
+          });
+        }
+        
+        // Add AI Answer
+        if (row.answer) {
+          const htmlContent = await marked.parse(row.answer);
+          messages.push({
+            id: `a-${row.id}`,
+            role: 'assistant',
+            content: htmlContent
+          });
+        }
+      }
+      
+      return messages;
+    } catch (error) {
+      console.error('ChatService failed to load session:', error);
       throw error;
     }
   }
