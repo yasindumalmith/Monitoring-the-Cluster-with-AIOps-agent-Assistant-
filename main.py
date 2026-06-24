@@ -92,11 +92,29 @@ async def chat(req: ChatRequest, request: Request):
                         
                         if tool_name == "log_cluster_incident":
                             inp = tc.get("input", {})
+                            resource_name = inp.get("resource_name", "")
+                            namespace = inp.get("namespace", "default")
+                            issue_type = inp.get("issueType", "Unknown")
+                            severity = inp.get("severity", "low")
+                            issue = inp.get("issue", "")
+                            
+                            import re
+                            # Remove typical deployment pod suffix like -54b5656585-hdsr5
+                            deployment_name = re.sub(r'-[a-z0-9]+-[a-z0-9]+$', '', resource_name)
+                            # Remove typical statefulset pod suffix like -0
+                            deployment_name = re.sub(r'-[0-9]+$', '', deployment_name)
+                            
+                            fingerprint = f"{namespace}_{deployment_name}_{issue_type}"
+                            
                             cursor.execute(
-                                "INSERT INTO incidents (detected_by_user_id, resource_name, namespace, severity, issue) VALUES (%s, %s, %s, %s, %s)",
-                                (req.user_id, inp.get("resource_name"), inp.get("namespace"), inp.get("severity"), inp.get("issue"))
+                                """
+                                INSERT INTO incidents (detected_by_user_id, resource_name, namespace, severity, issue, fingerprint, status) 
+                                VALUES (%s, %s, %s, %s, %s, %s, 'open')
+                                ON CONFLICT (fingerprint) WHERE status = 'open' DO NOTHING
+                                """,
+                                (req.user_id, resource_name, namespace, severity, issue, fingerprint)
                             )
-                            log.info("db.incident.logged", resource=inp.get("resource_name"))
+                            log.info("db.incident.logged", resource=resource_name, fingerprint=fingerprint)
                             
                     conn.commit()
                     log.info("db.insert.success", request_id=request_id)
