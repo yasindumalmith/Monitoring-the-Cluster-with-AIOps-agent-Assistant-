@@ -1,13 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const db = require('../database/db');
+const podDB = require('../database/podDB');
 
 let clients = [];
 
 // Get all historical incidents
 router.get('/', async (req, res) => {
     try {
-        const result = await db.query('SELECT * FROM incidents ORDER BY created_at DESC');
+        const result = await podDB.query('SELECT * FROM incidents ORDER BY created_at DESC');
         res.json(result.rows);
     } catch (err) {
         console.error('Error fetching incidents:', err);
@@ -18,7 +18,7 @@ router.get('/', async (req, res) => {
 // Get count of currently open incidents
 router.get('/open/count', async (req, res) => {
     try {
-        const result = await db.query("SELECT COUNT(*) FROM incidents WHERE status = 'open'");
+        const result = await podDB.query("SELECT COUNT(*) FROM incidents WHERE status = 'open'");
         const count = parseInt(result.rows[0].count, 10);
         res.json({ count });
     } catch (err) {
