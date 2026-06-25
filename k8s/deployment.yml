@@ -44,6 +44,9 @@ spec:
                 secretKeyRef:
                   name: aiops-secrets
                   key: DATABASE_URL
+            - name: BACKEND_URL
+              # Use host.docker.internal if using Docker Desktop, or host.minikube.internal for Minikube
+              value: "http://host.minikube.internal:4000"
           resources:
             requests:
               cpu: 100m

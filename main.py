@@ -120,6 +120,7 @@ async def chat(req: ChatRequest, request: Request):
                                 # Send Webhook to Node.js Backend
                                 import urllib.request
                                 import threading
+                                import os
                                 def notify_webhook():
                                     try:
                                         data = json.dumps({
@@ -130,7 +131,9 @@ async def chat(req: ChatRequest, request: Request):
                                             "issue": issue,
                                             "fingerprint": fingerprint
                                         }).encode('utf-8')
-                                        webhook_req = urllib.request.Request("http://localhost:4000/incidents/notify", data=data, headers={'Content-Type': 'application/json'})
+                                        
+                                        backend_url = os.getenv("BACKEND_URL", "http://localhost:4000")
+                                        webhook_req = urllib.request.Request(f"{backend_url}/incidents/notify", data=data, headers={'Content-Type': 'application/json'})
                                         urllib.request.urlopen(webhook_req, timeout=3)
                                     except Exception as ex:
                                         log.error("webhook.error", error=str(ex))
