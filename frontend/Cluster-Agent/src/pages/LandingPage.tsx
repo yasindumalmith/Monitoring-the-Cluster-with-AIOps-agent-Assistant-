@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Bot, Activity, AlertTriangle, Box, ArrowRight } from 'lucide-react';
-import k8sLogo from '../assets/k8s.png';
+import k8sLogo from '../assets/k8sNew.svg';
 
 export function LandingPage() {
   const [displayText, setDisplayText] = useState('');
