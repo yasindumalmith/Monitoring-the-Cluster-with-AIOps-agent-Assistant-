@@ -29,9 +29,13 @@ CREATE TABLE incidents (
     namespace TEXT,
     severity TEXT,
     issue TEXT,
-    resolved BOOLEAN DEFAULT FALSE,
+    fingerprint TEXT,
+    status TEXT DEFAULT 'open',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Partial Unique Index to ensure deduplication of open incidents
+CREATE UNIQUE INDEX unique_open_incident ON incidents (fingerprint) WHERE status = 'open';
 
 -- Table for storing application users
 CREATE TABLE users (
