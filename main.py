@@ -114,7 +114,30 @@ async def chat(req: ChatRequest, request: Request):
                                 """,
                                 (req.user_id, resource_name, namespace, severity, issue, fingerprint)
                             )
-                            log.info("db.incident.logged", resource=resource_name, fingerprint=fingerprint)
+                            if cursor.rowcount > 0:
+                                log.info("db.incident.logged", resource=resource_name, fingerprint=fingerprint)
+                                
+                                # Send Webhook to Node.js Backend
+                                import urllib.request
+                                import threading
+                                def notify_webhook():
+                                    try:
+                                        data = json.dumps({
+                                            "resource_name": resource_name,
+                                            "namespace": namespace,
+                                            "severity": severity,
+                                            "issueType": issue_type,
+                                            "issue": issue,
+                                            "fingerprint": fingerprint
+                                        }).encode('utf-8')
+                                        webhook_req = urllib.request.Request("http://localhost:4000/incidents/notify", data=data, headers={'Content-Type': 'application/json'})
+                                        urllib.request.urlopen(webhook_req, timeout=3)
+                                    except Exception as ex:
+                                        log.error("webhook.error", error=str(ex))
+                                        
+                                threading.Thread(target=notify_webhook, daemon=True).start()
+                            else:
+                                log.info("db.incident.duplicate_ignored", resource=resource_name, fingerprint=fingerprint)
                             
                     conn.commit()
                     log.info("db.insert.success", request_id=request_id)

@@ -14,11 +14,13 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const adminRoutes = require('./routes/admin');
 const chatRoutes = require('./routes/chat');
+const incidentsRoutes = require('./routes/incidents');
 
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/admin', adminRoutes);
 app.use('/chat', chatRoutes);
+app.use('/incidents', incidentsRoutes);
 
 // Basic health check
 app.get('/healthz', (req, res) => {
