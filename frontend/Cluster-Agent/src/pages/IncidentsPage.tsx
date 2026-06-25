@@ -29,6 +29,21 @@ export function IncidentsPage() {
       });
   }, []);
 
+  const handleResolve = async (id: number) => {
+    try {
+      const res = await fetch(`http://localhost:4000/incidents/${id}/resolve`, {
+        method: 'PATCH',
+      });
+      if (res.ok) {
+        setIncidents(prev => prev.map(inc => inc.id === id ? { ...inc, status: 'fixed' } : inc));
+      } else {
+        console.error("Failed to resolve incident: Server returned", res.status);
+      }
+    } catch (err) {
+      console.error("Failed to resolve incident", err);
+    }
+  };
+
   return (
     <div className="max-w-7xl mx-auto pb-12">
       <div className="mb-8">
@@ -69,10 +84,18 @@ export function IncidentsPage() {
                     <tr key={inc.id} className="hover:bg-purple-900/20 transition-colors group">
                       <td className="p-5 align-top">
                         {inc.status === 'open' ? (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-red-500/10 text-red-400 border border-red-500/30 shadow-[0_0_10px_rgba(239,68,68,0.2)]">
-                            <AlertCircle className="h-4 w-4" />
-                            Open
-                          </span>
+                          <div className="flex flex-col gap-2 items-start">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-red-500/10 text-red-400 border border-red-500/30 shadow-[0_0_10px_rgba(239,68,68,0.2)]">
+                              <AlertCircle className="h-4 w-4" />
+                              Open
+                            </span>
+                            <button 
+                              onClick={() => handleResolve(inc.id)}
+                              className="text-xs font-medium text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-1 transition-all"
+                            >
+                              <CheckCircle2 className="h-3.5 w-3.5" /> Mark Fixed
+                            </button>
+                          </div>
                         ) : (
                           <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
                             <CheckCircle2 className="h-4 w-4" />
