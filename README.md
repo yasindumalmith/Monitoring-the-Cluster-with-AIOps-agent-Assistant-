@@ -41,9 +41,9 @@ An AI-powered AIOps platform that enables DevOps teams to monitor Kubernetes clu
 
 ## 🏗️ System Architecture
 
-```text
 
-```
+![Architecture](docs/Architecture1.png)
+
 
 ---
 
@@ -144,17 +144,25 @@ project-root/
 
 Add screenshots here after completing the UI.
 
-### Dashboard
+### Front Page
 
-![Dashboard Screenshot](docs/dashboard.png)
+![Front Page](docs/Page.png)
 
 ### AI Chat Assistant
 
-![Chat Screenshot](docs/chat.png)
+![Chat](docs/AiChat.png)
 
-### Incident Management
+### AI Real Time Incident Detect
 
-![Incident Screenshot](docs/incidents.png)
+![Incident](docs/Incident_Alert.png)
+
+### Incident Dashboard
+
+![Incident](docs/IncidentDashboard.png)
+
+### Application Metrics Dashboard
+
+![Grafana Dashboard](docs/GrafanaDashboard.png)
 
 ---
 
