@@ -1,178 +1,191 @@
-# AI-Powered Kubernetes Operations Assistant
+# 🚀 AI-Powered Kubernetes Operations Assistant
 
-An intelligent AIOps platform that enables DevOps engineers and developers to monitor, troubleshoot, and manage Kubernetes clusters using natural language queries.
 
-The platform combines AI-powered analysis, Kubernetes APIs, Prometheus metrics, and incident management workflows to provide actionable insights and automated diagnostics.
 
----
-
-## Features
-
-* AI-powered Kubernetes troubleshooting and diagnostics
-* Natural language cluster queries
-* Pod, Deployment, Node, Event, and Log inspection
-* Incident detection and logging
-* Prometheus metrics integration
-* Grafana dashboard visualization
-* PostgreSQL-backed conversation and incident storage
-* Human-readable remediation recommendations
+An AI-powered AIOps platform that enables DevOps teams to monitor Kubernetes clusters, diagnose failures through natural language conversations, manage incidents, and receive real-time notifications.
 
 ---
 
-## Architecture
+## ✨ Highlights
+
+🔍 **AI-Powered Cluster Diagnostics**
+
+* Troubleshoot Kubernetes issues using natural language.
+* Automated root cause analysis for cluster failures.
+* AI-generated incident summaries and recommendations.
+
+⚡ **Real-Time Incident Detection**
+
+* Detect CrashLoopBackOff, ImagePullBackOff, OOMKilled, and other failures.
+* Automatic incident creation and tracking.
+* Deduplication using incident fingerprinting.
+
+🔔 **Live Notifications**
+
+* Real-time incident alerts using Server-Sent Events (SSE).
+* Dynamic notification bell updates.
+* In-app toast notifications.
+
+🛡️ **Role-Based Access Control**
+
+* JWT Authentication.
+* Admin, DevOps Engineer, and Developer roles.
+
+📊 **Operational Dashboard**
+
+* Cluster overview.
+* Incident management dashboard.
+* Chat history and diagnostics timeline.
+
+---
+
+## 🏗️ System Architecture
 
 ```text
-User
- │
- ▼
-Frontend (React)
- │
- ▼
-Backend API
- │
- ▼
-AI Agent
- │
- ├── Kubernetes API
- ├── Prometheus
- └── PostgreSQL
+
 ```
 
 ---
 
-## Workflow
+## 🎯 Key Features
 
-1. User submits a natural language query.
-2. AI agent determines which tools are required.
-3. Kubernetes and Prometheus data are collected.
-4. AI analyzes the results.
-5. A human-readable response is generated.
-6. Conversations and incidents are stored in PostgreSQL.
+### 🤖 AI Chat Assistant
 
----
-
-## Tech Stack
-
-### Backend
-
-* Python
-* FastAPI
-* Anthropic Claude API
-
-### Container & Orchestration
-
-* Kubernetes
-* Minikube
-* Docker
-
-### Observability
-
-* Prometheus
-* Grafana
-* ServiceMonitor
-
-### Database
-
-* PostgreSQL
-
-### Frontend
-
-* React
-* Axios
-* React Router
-
-### Security
-
-* JWT Authentication
-
-### Version Control
-
-* Git
-* GitHub
-
----
-
-## Database Schema
-
-### Conversations
-
-Stores user questions and AI-generated responses.
-
-### Tool Calls
-
-Stores executed tools, inputs, outputs, and execution duration.
-
-### Incidents
-
-Stores detected cluster incidents including:
-
-* Resource Name
-* Namespace
-* Severity
-* Issue Description
-* Timestamp
-
----
-
-## Example Queries
+Ask questions such as:
 
 ```text
 Check cluster health
-```
-
-```text
-Show failing pods
-```
-
-```text
 Why is my pod restarting?
+Analyze deployment issues
+Show node status
 ```
+
+The AI agent automatically gathers Kubernetes data, analyzes the cluster, and provides actionable recommendations.
+
+---
+
+### 🚨 Incident Management
+
+The platform automatically:
+
+* Detects operational issues.
+* Creates incidents.
+* Prevents duplicate active incidents.
+* Tracks incident lifecycle.
+* Maintains historical incident records.
+
+Supported states:
 
 ```text
-Analyze deployment failures
+OPEN → ACKNOWLEDGED → RESOLVED
 ```
+
+---
+
+### 🔄 Real-Time Notification Pipeline
 
 ```text
-Show CPU usage for running pods
+Incident Detected
+        │
+        ▼
+Python Agent
+        │
+        ▼
+Webhook
+        │
+        ▼
+Express Backend
+        │
+        ▼
+SSE Broadcast
+        │
+        ▼
+React Frontend
+```
+
+Users instantly receive:
+
+* 🔔 Notification Bell Updates
+* 📢 Toast Notifications
+* 📋 Incident Dashboard Updates
+
+---
+
+## 🛠️ Tech Stack
+
+| Category           | Technologies                      |
+| ------------------ | --------------------------------- |
+| Frontend           | React, React Router, Tailwind CSS |
+| Backend            | Node.js, Express.js               |
+| AI Agent           | Python, LLM Integration           |
+| Database           | PostgreSQL                        |
+| Container Platform | Kubernetes                        |
+| Monitoring         | Prometheus, Grafana               |
+| Authentication     | JWT                               |
+| Notifications      | SSE (Server-Sent Events)          |
+
+---
+
+## 📂 Project Structure
+
+```text
+project-root/
+
+├── frontend/
+├── backend/
+├── agent/
+├── kubernetes/
+└── database/
 ```
 
 ---
 
-## Monitoring
+## 📸 Screenshots
 
-Prometheus collects application and cluster metrics.
+Add screenshots here after completing the UI.
 
-Grafana visualizes:
+### Dashboard
 
-* CPU Usage
-* Memory Usage
-* Pod Health
-* Cluster Status
-* Application Metrics
+![Dashboard Screenshot](docs/dashboard.png)
 
----
+### AI Chat Assistant
 
-## Future Enhancements
+![Chat Screenshot](docs/chat.png)
 
-* Email notifications for incidents
-* Role-based access control
-* Multi-cluster support
-* Historical analytics dashboard
-* Real-time notifications
-* Automated remediation workflows
+### Incident Management
+
+![Incident Screenshot](docs/incidents.png)
 
 ---
 
-## Project Goals
+## 🚀 Future Improvements
 
-* Simplify Kubernetes troubleshooting
-* Improve operational visibility
-* Accelerate incident investigation
-* Enable conversational cluster management
-* Demonstrate practical AIOps capabilities
+* Email Notifications
+* Slack / Microsoft Teams Integration
+* Multi-Cluster Support
+* Predictive Failure Detection
+* AI-Generated Remediation Plans
+* Redis Caching
+* Advanced Incident Analytics
 
 ---
 
-## Author
+## 📚 Learning Outcomes
 
-Developed as a Kubernetes-focused AIOps platform for intelligent cluster monitoring, incident detection, and operational assistance.
+This project demonstrates practical experience in:
+
+* Kubernetes Operations
+* AIOps
+* Incident Management
+* Full-Stack Development
+* Event-Driven Architectures
+* Real-Time Notification Systems
+* PostgreSQL Database Design
+* Authentication & Authorization
+* Monitoring & Observability
+
+---
+
+## ⭐ Project Goal
+
+Build an intelligent Kubernetes operations platform that helps engineers detect, diagnose, and resolve infrastructure issues faster through AI-assisted workflows and real-time operational visibility.
