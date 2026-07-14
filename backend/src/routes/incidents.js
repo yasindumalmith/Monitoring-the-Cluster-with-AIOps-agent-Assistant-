@@ -31,9 +31,11 @@ router.get('/open/count', async (req, res) => {
 router.patch('/:id/resolve', async (req, res) => {
     try {
         const { id } = req.params;
+        const { resolution_summary } = req.body;
+        
         const result = await podDB.query(
-            "UPDATE incidents SET status = 'fixed' WHERE id = $1 RETURNING *",
-            [id]
+            "UPDATE incidents SET status = 'fixed', resolution_summary = $1, resolved_at = CURRENT_TIMESTAMP WHERE id = $2 RETURNING *",
+            [resolution_summary, id]
         );
         
         if (result.rows.length === 0) {

@@ -31,6 +31,8 @@ CREATE TABLE incidents (
     issue TEXT,
     fingerprint TEXT,
     status TEXT DEFAULT 'open',
+    resolution_summary TEXT,
+    resolved_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

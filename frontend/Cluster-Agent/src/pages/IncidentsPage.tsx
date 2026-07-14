@@ -9,12 +9,16 @@ interface Incident {
   issue: string;
   fingerprint: string;
   status: string;
+  resolution_summary?: string;
+  resolved_at?: string;
   created_at: string;
 }
 
 export function IncidentsPage() {
   const [incidents, setIncidents] = useState<Incident[]>([]);
   const [loading, setLoading] = useState(true);
+  const [resolvingId, setResolvingId] = useState<number | null>(null);
+  const [resolutionText, setResolutionText] = useState('');
 
   useEffect(() => {
     fetch('http://localhost:4000/incidents')
@@ -30,12 +34,17 @@ export function IncidentsPage() {
   }, []);
 
   const handleResolve = async (id: number) => {
+    if (!resolutionText.trim()) return;
     try {
       const res = await fetch(`http://localhost:4000/incidents/${id}/resolve`, {
         method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ resolution_summary: resolutionText })
       });
       if (res.ok) {
-        setIncidents(prev => prev.map(inc => inc.id === id ? { ...inc, status: 'fixed' } : inc));
+        setIncidents(prev => prev.map(inc => inc.id === id ? { ...inc, status: 'fixed', resolution_summary: resolutionText } : inc));
+        setResolvingId(null);
+        setResolutionText('');
       } else {
         console.error("Failed to resolve incident: Server returned", res.status);
       }
@@ -89,18 +98,53 @@ export function IncidentsPage() {
                               <AlertCircle className="h-4 w-4" />
                               Open
                             </span>
-                            <button 
-                              onClick={() => handleResolve(inc.id)}
-                              className="text-xs font-medium text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-1 transition-all"
-                            >
-                              <CheckCircle2 className="h-3.5 w-3.5" /> Mark Fixed
-                            </button>
+                            {resolvingId === inc.id ? (
+                              <div className="mt-2 flex flex-col gap-2 w-48">
+                                <textarea
+                                  className="w-full bg-[#040d24] text-slate-200 border border-purple-500/30 rounded p-2 text-xs focus:outline-none focus:border-purple-400 placeholder-slate-500"
+                                  placeholder="How was this fixed?"
+                                  rows={3}
+                                  value={resolutionText}
+                                  onChange={(e) => setResolutionText(e.target.value)}
+                                />
+                                <div className="flex gap-2">
+                                  <button
+                                    onClick={() => handleResolve(inc.id)}
+                                    disabled={!resolutionText.trim()}
+                                    className="px-2 py-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 rounded text-xs font-medium hover:bg-emerald-500/30 disabled:opacity-50 transition-all"
+                                  >
+                                    Submit
+                                  </button>
+                                  <button
+                                    onClick={() => { setResolvingId(null); setResolutionText(''); }}
+                                    className="px-2 py-1 bg-slate-800 text-slate-300 border border-slate-700 rounded text-xs font-medium hover:bg-slate-700 transition-all"
+                                  >
+                                    Cancel
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <button 
+                                onClick={() => { setResolvingId(inc.id); setResolutionText(''); }}
+                                className="text-xs font-medium text-emerald-400 hover:text-emerald-300 hover:underline flex items-center gap-1 transition-all"
+                              >
+                                <CheckCircle2 className="h-3.5 w-3.5" /> Mark Fixed
+                              </button>
+                            )}
                           </div>
                         ) : (
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-                            <CheckCircle2 className="h-4 w-4" />
-                            Fixed
-                          </span>
+                          <div className="flex flex-col gap-2 items-start">
+                            <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                              <CheckCircle2 className="h-4 w-4" />
+                              Fixed
+                            </span>
+                            {inc.resolution_summary && (
+                              <div className="mt-2 text-xs text-emerald-300/80 bg-emerald-900/20 p-2 rounded border border-emerald-500/20 w-48">
+                                <span className="font-semibold block mb-1">Resolution:</span>
+                                {inc.resolution_summary}
+                              </div>
+                            )}
+                          </div>
                         )}
                       </td>
                       <td className="p-5 align-top font-medium text-purple-50 text-base">{inc.resource_name}</td>
