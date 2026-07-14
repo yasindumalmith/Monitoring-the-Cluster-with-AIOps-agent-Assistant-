@@ -26,7 +26,7 @@ spec:
     spec:
       containers:
         - name: postgres
-          image: postgres:15-alpine
+          image: pgvector/pgvector:pg15
           env:
             - name: POSTGRES_USER
               value: aiops_user
@@ -36,5 +36,5 @@ spec:
               value: aiops_db
           ports:
             - containerPort: 5432
-          # WARNING: This is a basic setup. In production, you MUST mount a PersistentVolume 
+          # WARNING: This is a basic setup. In production, you MUST mount a PersistentVolume
           # here so data isn't lost if the database pod restarts!
