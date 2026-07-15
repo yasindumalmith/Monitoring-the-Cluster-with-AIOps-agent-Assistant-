@@ -20,6 +20,12 @@ Demo Link :- [https://www.youtube.com/watch?v=R4KLq3zCNtg](https://www.youtube.c
 - Automatic incident creation and tracking.
 - Deduplication using incident fingerprinting.
 
+🧠 **Retrieval-Augmented Generation (RAG)**
+
+- Automatic vector embedding of historical incidents using SentenceTransformers.
+- Similarity search via pgvector to retrieve past incident solutions.
+- Microservice architecture with dedicated API Gateway and ML Embedder components.
+
 🔔 **Live Notifications**
 
 - Real-time incident alerts using Server-Sent Events (SSE).
@@ -80,6 +86,17 @@ OPEN → ACKNOWLEDGED → RESOLVED
 
 ---
 
+### 🧠 Retrieval-Augmented Generation (RAG) Memory
+
+The AI Agent learns from past incidents to solve future problems faster:
+
+- **Automatic Embedding**: When an incident is resolved, a dedicated heavy ML worker (`ai-ops-embedder`) automatically generates a vector embedding of the problem and its solution using the `BAAI/bge-base-en-v1.5` model.
+- **Vector Search**: The agent uses PostgreSQL with `pgvector` to perform similarity searches on historical data.
+- **Proactive Troubleshooting**: Before diagnosing a cluster error, the AI searches the incident database to see if a similar CrashLoopBackOff or OOMKilled event occurred in the past, directly providing the proven resolution.
+- **Decoupled Architecture**: The PyTorch embedding process is entirely decoupled from the main FastAPI server, guaranteeing performance, preventing Out-Of-Memory kills, and ensuring instant API startup times.
+
+---
+
 ### 🔄 Real-Time Notification Pipeline
 
 ```text
@@ -115,8 +132,9 @@ Users instantly receive:
 | ------------------ | --------------------------------- |
 | Frontend           | React, React Router, Tailwind CSS |
 | Backend            | Node.js, Express.js               |
-| AI Agent           | Python, LLM Integration           |
-| Database           | PostgreSQL                        |
+| AI Agent           | Python, FastAPI, Anthropic LLM    |
+| ML Embedder        | PyTorch, SentenceTransformers     |
+| Database           | PostgreSQL, pgvector              |
 | Container Platform | Kubernetes                        |
 | Monitoring         | Prometheus, Grafana               |
 | Authentication     | JWT                               |
