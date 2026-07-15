@@ -5,6 +5,7 @@ from .deployment import deployment_status
 from .nodes import node_health
 from .metrics import query_metrics
 from .incident import log_cluster_incident
+from .search_past_incidents import search_past_incidents
 
 TOOL_FUNCTIONS = {
     "get_pods": get_pods,
@@ -14,6 +15,7 @@ TOOL_FUNCTIONS = {
     "node_health": node_health,
     "query_metrics": query_metrics,
     "log_cluster_incident": log_cluster_incident,
+    "search_past_incidents": search_past_incidents,
 }
 
 TOOLS = [
@@ -133,6 +135,22 @@ TOOLS = [
                 "issue": {"type": "string", "description": "A brief description of what is wrong"},
             },
             "required": ["resource_name", "namespace", "severity", "issueType", "issue"],
+        },
+    },
+    {
+        "name": "search_past_incidents",
+        "description": (
+            "Use this tool to search through historical incidents in the vector database "
+            "to find similar problems and see how they were resolved in the past. "
+            "Use this when you encounter an error and want to know if it has happened before."
+        ),
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "query": {"type": "string", "description": "A natural language description of the issue to search for (e.g., 'pod crashing with OOMKilled')."},
+                "limit": {"type": "integer", "description": "Maximum number of historical incidents to return (default is 5)."},
+            },
+            "required": ["query"],
         },
     },
 ]
