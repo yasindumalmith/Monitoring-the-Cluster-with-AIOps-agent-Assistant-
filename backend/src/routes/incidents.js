@@ -42,6 +42,10 @@ router.patch('/:id/resolve', async (req, res) => {
             return res.status(404).json({ error: 'Incident not found' });
         }
         
+        // Asynchronously trigger embedding generation in Python agent
+        fetch(`http://localhost:8000/v1/incidents/${id}/embed`, { method: 'POST' })
+            .catch(err => console.error('Failed to trigger embedding generation:', err));
+        
         res.json(result.rows[0]);
     } catch (err) {
         console.error('Error resolving incident:', err);

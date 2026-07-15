@@ -12,11 +12,15 @@ from agent import run_agent
 from database import get_db_connection
 from logging_config import configure_logging
 from metrics import requests_total, request_duration
+from sentence_transformers import SentenceTransformer
 
 configure_logging()
 log = structlog.get_logger()
 
 app = FastAPI(title="AI Ops Assistant", version="1.0.0")
+
+log.info("loading.embedding.model", model="BAAI/bge-base-en-v1.5")
+embedder = SentenceTransformer('BAAI/bge-base-en-v1.5')
 
 
 class Message(BaseModel):
@@ -169,3 +173,32 @@ async def readyz():
 @app.get("/metrics")
 async def metrics():
     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
+
+@app.post("/v1/incidents/{incident_id}/embed")
+async def embed_incident(incident_id: int):
+    with get_db_connection() as conn:
+        if not conn:
+            return {"error": "Database connection failed"}
+        try:
+            cursor = conn.cursor()
+            cursor.execute("SELECT resource_name, namespace, issue, resolution_summary FROM incidents WHERE id = %s", (incident_id,))
+            row = cursor.fetchone()
+            if not row:
+                return {"error": "Incident not found"}
+            
+            resource_name, namespace, issue, resolution_summary = row
+            text_to_embed = f"Resource: {resource_name}\nNamespace: {namespace}\nIssue: {issue}\nResolution: {resolution_summary}"
+            
+            log.info("embedding.started", incident_id=incident_id)
+            # Generate embedding
+            embedding = embedder.encode(text_to_embed).tolist()
+            
+            # Save to DB
+            cursor.execute("UPDATE incidents SET embedding = %s WHERE id = %s", (embedding, incident_id))
+            conn.commit()
+            log.info("embedding.success", incident_id=incident_id)
+            return {"status": "success"}
+        except Exception as e:
+            log.error("embed.error", error=str(e))
+            return {"error": str(e)}

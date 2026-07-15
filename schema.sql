@@ -1,3 +1,6 @@
+-- Enable pgvector for embeddings
+CREATE EXTENSION IF NOT EXISTS vector;
+
 -- Table for storing chat history
 CREATE TABLE conversations (
     id SERIAL PRIMARY KEY,
@@ -33,6 +36,7 @@ CREATE TABLE incidents (
     status TEXT DEFAULT 'open',
     resolution_summary TEXT,
     resolved_at TIMESTAMP,
+    embedding vector(768),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
