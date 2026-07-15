@@ -1,8 +1,12 @@
 import structlog
 from fastapi import FastAPI
+from pydantic import BaseModel
 from sentence_transformers import SentenceTransformer
 from database import get_db_connection
 from logging_config import configure_logging
+
+class QueryRequest(BaseModel):
+    text: str
 
 configure_logging()
 log = structlog.get_logger()
@@ -39,6 +43,16 @@ async def embed_incident(incident_id: int):
         except Exception as e:
             log.error("embed.error", error=str(e))
             return {"error": str(e)}
+
+@app.post("/v1/query/embed")
+async def embed_query(req: QueryRequest):
+    try:
+        log.info("query.embedding.started", length=len(req.text))
+        embedding = embedder.encode(req.text).tolist()
+        return {"embedding": embedding}
+    except Exception as e:
+        log.error("query.embed.error", error=str(e))
+        return {"error": str(e)}
 
 @app.get("/healthz")
 async def healthz():

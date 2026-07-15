@@ -42,6 +42,9 @@ Operating rules:
   asks for more.
 - If a tool returns an error, explain it in plain language and suggest what
   the user could check.
+- When you detect an incident and call log_cluster_incident, proactively ask 
+  the user if they would like you to search historical incidents to see how 
+  similar issues were resolved in the past.
 - Be concise. Use bullet points for findings. Don't restate raw tool output
   back to the user — summarize what matters."""
 
