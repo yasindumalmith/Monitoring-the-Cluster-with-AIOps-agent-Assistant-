@@ -26,7 +26,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: app
-          image: yasindumalmith/ai-ops-assistant:v2
+          image: yasindumalmith/ai-ops-api:v1
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8000
@@ -47,19 +47,15 @@ spec:
             - name: BACKEND_URL
               # Use host.docker.internal if using Docker Desktop, or host.minikube.internal for Minikube
               value: "http://host.minikube.internal:4000"
+            - name: EMBEDDER_URL
+              value: "http://ai-ops-embedder.ai-ops.svc.cluster.local:8001"
           resources:
             requests:
               cpu: 100m
-              memory: 512Mi
+              memory: 256Mi
             limits:
               cpu: 500m
-              memory: 2Gi
-          startupProbe:
-            httpGet:
-              path: /healthz
-              port: 8000
-            failureThreshold: 120
-            periodSeconds: 10
+              memory: 512Mi
           livenessProbe:
             httpGet:
               path: /healthz
@@ -77,13 +73,3 @@ spec:
             readOnlyRootFilesystem: true
             capabilities:
               drop: ["ALL"]
-          volumeMounts:
-            - name: tmp-volume
-              mountPath: /tmp
-            - name: cache-volume
-              mountPath: /home/app/.cache
-      volumes:
-        - name: tmp-volume
-          emptyDir: {}
-        - name: cache-volume
-          emptyDir: {}

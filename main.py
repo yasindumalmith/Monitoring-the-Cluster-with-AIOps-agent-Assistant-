@@ -1,7 +1,9 @@
 import time
 import uuid
 import json
+import os
 import structlog
+import httpx
 from fastapi import FastAPI, Request
 from fastapi.responses import Response
 from pydantic import BaseModel, Field
@@ -12,15 +14,11 @@ from agent import run_agent
 from database import get_db_connection
 from logging_config import configure_logging
 from metrics import requests_total, request_duration
-from sentence_transformers import SentenceTransformer
 
 configure_logging()
 log = structlog.get_logger()
 
 app = FastAPI(title="AI Ops Assistant", version="1.0.0")
-
-log.info("loading.embedding.model", model="BAAI/bge-base-en-v1.5")
-embedder = SentenceTransformer('BAAI/bge-base-en-v1.5')
 
 
 class Message(BaseModel):
@@ -176,29 +174,12 @@ async def metrics():
 
 
 @app.post("/v1/incidents/{incident_id}/embed")
-async def embed_incident(incident_id: int):
-    with get_db_connection() as conn:
-        if not conn:
-            return {"error": "Database connection failed"}
+async def proxy_embed(incident_id: int):
+    embedder_url = os.getenv("EMBEDDER_URL", "http://ai-ops-embedder.ai-ops.svc.cluster.local:8001")
+    async with httpx.AsyncClient() as client:
         try:
-            cursor = conn.cursor()
-            cursor.execute("SELECT resource_name, namespace, issue, resolution_summary FROM incidents WHERE id = %s", (incident_id,))
-            row = cursor.fetchone()
-            if not row:
-                return {"error": "Incident not found"}
-            
-            resource_name, namespace, issue, resolution_summary = row
-            text_to_embed = f"Resource: {resource_name}\nNamespace: {namespace}\nIssue: {issue}\nResolution: {resolution_summary}"
-            
-            log.info("embedding.started", incident_id=incident_id)
-            # Generate embedding
-            embedding = embedder.encode(text_to_embed).tolist()
-            
-            # Save to DB
-            cursor.execute("UPDATE incidents SET embedding = %s WHERE id = %s", (embedding, incident_id))
-            conn.commit()
-            log.info("embedding.success", incident_id=incident_id)
-            return {"status": "success"}
+            resp = await client.post(f"{embedder_url}/v1/incidents/{incident_id}/embed", timeout=60.0)
+            return Response(content=resp.content, status_code=resp.status_code, media_type=resp.headers.get("content-type"))
         except Exception as e:
-            log.error("embed.error", error=str(e))
-            return {"error": str(e)}
+            log.error("proxy.embed.error", error=str(e))
+            return {"error": "Embedder service unavailable", "details": str(e)}
