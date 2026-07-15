@@ -1,7 +1,8 @@
 FROM python:3.12-slim AS builder
 WORKDIR /build
 COPY requirements.txt .
-RUN pip install --user --no-cache-dir -r requirements.txt
+RUN pip install --user --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
+RUN pip install --default-timeout=1000 --user --no-cache-dir -r requirements.txt
 
 FROM python:3.12-slim
 RUN groupadd -r app && useradd -r -g app -u 1000 app
