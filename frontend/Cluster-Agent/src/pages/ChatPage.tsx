@@ -25,7 +25,7 @@ export function ChatPage() {
       setChatId(queryChatId);
       setIsTyping(true);
       try {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token');
         if (token) {
           const loadedMessages = await ChatService.loadChatSession(queryChatId, token);
           if (loadedMessages.length > 0) {
@@ -52,7 +52,7 @@ export function ChatPage() {
     setIsTyping(true);
 
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token');
       if (!token) throw new Error('No authentication token found');
 
       // 2. Call the ChatService to handle all the complex payload mapping

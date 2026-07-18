@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Loader } from '../components/common/Loader';
 import { loginUser } from '../api/auth';
@@ -9,6 +9,11 @@ export function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
 
+  // Clear any existing session when visiting the login page
+  useEffect(() => {
+    sessionStorage.removeItem('token');
+  }, []);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -18,12 +23,12 @@ export function LoginPage() {
       const data = await loginUser({ email, password });
       
       if (data.token) {
-        localStorage.setItem('token', data.token);
+        sessionStorage.setItem('token', data.token);
       } else {
-        localStorage.setItem('token', 'simulated-jwt-token');
+        sessionStorage.setItem('token', 'simulated-jwt-token');
       }
       
-      // Redirect to dashboard (force reload to pick up localStorage change in App state)
+      // Redirect to dashboard (force reload to pick up sessionStorage change in App state)
       window.location.href = '/dashboard';
     } catch (err: any) {
       setError(err.message);

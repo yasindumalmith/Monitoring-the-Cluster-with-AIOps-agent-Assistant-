@@ -11,7 +11,7 @@ export function NavBar({ incidentCount }: NavBarProps) {
   const [user, setUser] = useState<{name: string, role: string} | null>(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token');
     if (token) {
       getUserProfile(token)
         .then(data => {
@@ -71,7 +71,7 @@ export function NavBar({ incidentCount }: NavBarProps) {
                 {/* Logout Button */}
                 <button 
                   onClick={() => {
-                    localStorage.removeItem('token');
+                    sessionStorage.removeItem('token');
                     window.location.href = '/login';
                   }}
                   className="flex items-center gap-2 ml-4 text-sm font-medium text-purple-300 hover:text-red-400 transition-colors"

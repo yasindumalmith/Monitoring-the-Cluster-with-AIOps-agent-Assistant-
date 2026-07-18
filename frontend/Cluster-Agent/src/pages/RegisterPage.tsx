@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Loader } from '../components/common/Loader';
 import { registerUser } from '../api/auth';
@@ -11,6 +11,11 @@ export function RegisterPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
 
+  // Clear any existing session when visiting the register page
+  useEffect(() => {
+    sessionStorage.removeItem('token');
+  }, []);
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
@@ -20,9 +25,9 @@ export function RegisterPage() {
       const data = await registerUser({ fullName, email, role, password });
 
       if (data.token) {
-        localStorage.setItem('token', data.token);
+        sessionStorage.setItem('token', data.token);
       } else {
-        localStorage.setItem('token', 'simulated-jwt-token');
+        sessionStorage.setItem('token', 'simulated-jwt-token');
       }
       
       window.location.href = '/dashboard';

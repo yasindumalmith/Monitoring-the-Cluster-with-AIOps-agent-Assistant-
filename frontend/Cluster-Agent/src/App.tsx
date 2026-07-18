@@ -38,8 +38,8 @@ function MainLayout({ mockUser }: { mockUser: any }) {
 }
 
 function App() {
-  // Check if user is authenticated via JWT in localStorage
-  const isAuthenticated = !!localStorage.getItem('token');
+  // Check if user is authenticated via JWT in sessionStorage
+  const isAuthenticated = !!sessionStorage.getItem('token');
   
   // If authenticated, populate mockUser. Otherwise, keep it null.
   const mockUser = isAuthenticated ? {
