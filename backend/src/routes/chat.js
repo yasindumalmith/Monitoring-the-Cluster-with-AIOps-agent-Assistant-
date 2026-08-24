@@ -29,8 +29,9 @@ router.post('/', verifyToken, async (req, res) => {
             chat_id: chat_id
         };
 
-        // Forward to Python AI Agent running on port 8000
-        const response = await fetch('http://localhost:8000/v1/chat', {
+        // Forward to Python AI Agent (supports AGENT_URL env variable with cluster fallback)
+        const agentUrl = process.env.AGENT_URL || 'http://ai-ops-assistant.ai-ops.svc.cluster.local:8000';
+        const response = await fetch(`${agentUrl}/v1/chat`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

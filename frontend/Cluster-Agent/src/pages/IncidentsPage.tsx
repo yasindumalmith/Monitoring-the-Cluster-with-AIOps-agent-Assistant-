@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { AlertCircle, ShieldAlert, CheckCircle2, Loader2 } from 'lucide-react';
+import { API_URL } from '../api/config';
 
 interface Incident {
   id: number;
@@ -21,7 +22,7 @@ export function IncidentsPage() {
   const [resolutionText, setResolutionText] = useState('');
 
   useEffect(() => {
-    fetch('http://localhost:4000/incidents')
+    fetch(`${API_URL}/incidents`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setIncidents(data);
@@ -36,7 +37,7 @@ export function IncidentsPage() {
   const handleResolve = async (id: number) => {
     if (!resolutionText.trim()) return;
     try {
-      const res = await fetch(`http://localhost:4000/incidents/${id}/resolve`, {
+      const res = await fetch(`${API_URL}/incidents/${id}/resolve`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ resolution_summary: resolutionText })

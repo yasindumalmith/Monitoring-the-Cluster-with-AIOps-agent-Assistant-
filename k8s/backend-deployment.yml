@@ -1,23 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ai-ops-assistant
+  name: ai-ops-backend
   namespace: ai-ops
   labels:
-    app: ai-ops-assistant
+    app: ai-ops-backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ai-ops-assistant
+      app: ai-ops-backend
   template:
     metadata:
       labels:
-        app: ai-ops-assistant
-      annotations:
-        prometheus.io/scrape: "true"
-        prometheus.io/port: "8000"
-        prometheus.io/path: "/metrics"
+        app: ai-ops-backend
     spec:
       serviceAccountName: ai-ops-assistant
       securityContext:
@@ -26,49 +22,50 @@ spec:
         fsGroup: 1000
       containers:
         - name: app
-          image: yasindumalmith/ai-ops-api:v1
+          image: yasindumalmith/ai-ops-backend:v1
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8000
+            - containerPort: 4000
               name: http
           env:
-            - name: ANTHROPIC_API_KEY
-              valueFrom:
-                secretKeyRef:
-                  name: aiops-secrets
-                  key: ANTHROPIC_API_KEY
-            - name: PROMETHEUS_URL
-              value: "http://prometheus-kube-prometheus-prometheus.monitoring.svc:9090"
+            - name: PORT
+              value: "4000"
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
                   name: aiops-secrets
                   key: DATABASE_URL
-            - name: BACKEND_URL
-              value: "http://ai-ops-backend.ai-ops.svc.cluster.local:4000"
-            - name: EMBEDDER_URL
-              value: "http://ai-ops-embedder.ai-ops.svc.cluster.local:8001"
+            - name: USER_DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: aiops-secrets
+                  key: USER_DATABASE_URL
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: aiops-secrets
+                  key: JWT_SECRET
+            - name: AGENT_URL
+              value: "http://ai-ops-assistant.ai-ops.svc.cluster.local:80"
           resources:
             requests:
               cpu: 100m
-              memory: 256Mi
+              memory: 128Mi
             limits:
               cpu: 500m
-              memory: 512Mi
+              memory: 256Mi
           livenessProbe:
             httpGet:
               path: /healthz
-              port: 8000
+              port: 4000
             initialDelaySeconds: 10
             periodSeconds: 30
           readinessProbe:
             httpGet:
-              path: /readyz
-              port: 8000
+              path: /healthz
+              port: 4000
             initialDelaySeconds: 5
             periodSeconds: 10
           securityContext:
             allowPrivilegeEscalation: false
-            readOnlyRootFilesystem: true
-            capabilities:
-              drop: ["ALL"]
+            readOnlyRootFilesystem: false

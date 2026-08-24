@@ -43,7 +43,8 @@ router.patch('/:id/resolve', async (req, res) => {
         }
         
         // Asynchronously trigger embedding generation in Python agent
-        fetch(`http://localhost:8000/v1/incidents/${id}/embed`, { method: 'POST' })
+        const agentUrl = process.env.AGENT_URL || 'http://ai-ops-assistant.ai-ops.svc.cluster.local:8000';
+        fetch(`${agentUrl}/v1/incidents/${id}/embed`, { method: 'POST' })
             .catch(err => console.error('Failed to trigger embedding generation:', err));
         
         res.json(result.rows[0]);

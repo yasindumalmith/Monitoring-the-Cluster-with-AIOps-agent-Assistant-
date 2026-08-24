@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { API_URL } from '../api/config';
 
 export function useIncidentStream() {
   const [incidentCount, setIncidentCount] = useState(0);
@@ -6,7 +7,7 @@ export function useIncidentStream() {
 
   useEffect(() => {
     // 1. Fetch initial open incident count
-    fetch('http://localhost:4000/incidents/open/count')
+    fetch(`${API_URL}/incidents/open/count`)
       .then(res => res.json())
       .then(data => {
         if (typeof data.count === 'number') {
@@ -16,7 +17,7 @@ export function useIncidentStream() {
       .catch(err => console.error("Failed to fetch initial incident count:", err));
 
     // 2. Establish SSE Connection
-    const sse = new EventSource('http://localhost:4000/incidents/stream');
+    const sse = new EventSource(`${API_URL}/incidents/stream`);
     
     sse.onmessage = (event) => {
       const data = JSON.parse(event.data);
