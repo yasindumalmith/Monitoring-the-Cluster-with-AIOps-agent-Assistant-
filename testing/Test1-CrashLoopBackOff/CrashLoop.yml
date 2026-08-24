@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crash-command
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crash-command
+  template:
+    metadata:
+      labels:
+        app: crash-command
+    spec:
+      containers:
+        - name: app
+          image: nginx
+          command: ["nonexistent-command"]
