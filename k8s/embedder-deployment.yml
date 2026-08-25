@@ -26,7 +26,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: app
-          image: yasindumalmith/ai-ops-embedder:v1
+          image: docker.io/yasindumalmith/ai-ops-embedder:v1
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8001
