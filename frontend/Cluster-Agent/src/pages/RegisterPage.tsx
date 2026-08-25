@@ -30,7 +30,7 @@ export function RegisterPage() {
         sessionStorage.setItem('token', 'simulated-jwt-token');
       }
       
-      window.location.href = '/dashboard';
+      window.location.href = '/chat';
     } catch (err: any) {
       setError(err.message);
     } finally {

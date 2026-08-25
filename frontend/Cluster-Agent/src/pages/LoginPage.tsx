@@ -28,8 +28,8 @@ export function LoginPage() {
         sessionStorage.setItem('token', 'simulated-jwt-token');
       }
       
-      // Redirect to dashboard (force reload to pick up sessionStorage change in App state)
-      window.location.href = '/dashboard';
+      // Redirect to AI chat section (force reload to pick up sessionStorage change in App state)
+      window.location.href = '/chat';
     } catch (err: any) {
       setError(err.message);
     } finally {
