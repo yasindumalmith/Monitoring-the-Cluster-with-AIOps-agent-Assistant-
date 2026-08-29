@@ -4,11 +4,24 @@ import { ChatWindow } from '../components/chat/ChatWindow';
 import { ChatInput } from '../components/chat/ChatInput';
 import type { Message } from '../components/chat/ChatMessage';
 import { ChatService } from '../services/ChatService';
+
+const generateId = () => {
+  if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  // Fallback UUID v4 generator for non-secure HTTP contexts
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+    const r = Math.random() * 16 | 0;
+    const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return v.toString(16);
+  });
+};
+
 export function ChatPage() {
   const [searchParams] = useSearchParams();
   const queryChatId = searchParams.get('id');
 
-  const [chatId, setChatId] = useState(() => queryChatId || crypto.randomUUID());
+  const [chatId, setChatId] = useState(() => queryChatId || generateId());
   const [messages, setMessages] = useState<Message[]>([
     { id: '1', role: 'assistant', content: 'Hello! I am your AIOps Assistant. How can I help you diagnose the cluster today?' }
   ]);
@@ -17,7 +30,7 @@ export function ChatPage() {
   useEffect(() => {
     const loadSession = async () => {
       if (!queryChatId) {
-        setChatId(crypto.randomUUID());
+        setChatId(generateId());
         setMessages([{ id: '1', role: 'assistant', content: 'Hello! I am your AIOps Assistant. How can I help you diagnose the cluster today?' }]);
         return;
       }

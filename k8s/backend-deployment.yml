@@ -22,7 +22,7 @@ spec:
         fsGroup: 1000
       containers:
         - name: app
-          image: yasindumalmith/ai-ops-backend:v1
+          image: yasindumalmith/ai-ops-backend:v3
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 4000

@@ -1,9 +1,8 @@
-import { BrowserRouter as Router, Routes, Route, Link, Outlet } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import { AlertTriangle } from 'lucide-react';
 import { useIncidentStream } from './hooks/useIncidentStream';
 import { NavBar } from './components/common/NavBar';
 import { Sidebar } from './components/common/Sidebar';
-import { Loader } from './components/common/Loader';
 import { ProtectedRoute } from './components/common/ProtectedRoute';
 import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';

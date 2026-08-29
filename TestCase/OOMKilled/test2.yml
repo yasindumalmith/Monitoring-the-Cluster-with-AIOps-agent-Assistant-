@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-2
+  namespace: oomkilled
+spec:
+  replicas: 1
+
+  selector:
+    matchLabels:
+      app: test-2
+
+  template:
+    metadata:
+      labels:
+        app: test-2
+
+    spec:
+      containers:
+        - name: memory-stress
+          image: polinux/stress
+
+          command: ["stress"]
+
+          args:
+            - "--vm"
+            - "2"
+            - "--vm-bytes"
+            - "80M"
+            - "--vm-hang"
+            - "1"
+
+          resources:
+            requests:
+              memory: "50Mi"
+            limits:
+              memory: "120Mi"

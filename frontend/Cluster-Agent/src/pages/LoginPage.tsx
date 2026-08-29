@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Loader } from '../components/common/Loader';
 import { loginUser } from '../api/auth';
 
 export function LoginPage() {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,8 +29,9 @@ export function LoginPage() {
         sessionStorage.setItem('token', 'simulated-jwt-token');
       }
       
-      // Redirect to AI chat section (force reload to pick up sessionStorage change in App state)
-      window.location.href = '/chat';
+      // Redirect to AI chat section
+      navigate('/chat');
+      window.location.reload(); // Force reload to pick up sessionStorage change in App state
     } catch (err: any) {
       setError(err.message);
     } finally {

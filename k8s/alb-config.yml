@@ -1,0 +1,7 @@
+apiVersion: gateway.k8s.aws/v1
+kind: LoadBalancerConfiguration
+metadata:
+  name: ai-ops-alb-config
+  namespace: ai-ops
+spec:
+  scheme: internet-facing

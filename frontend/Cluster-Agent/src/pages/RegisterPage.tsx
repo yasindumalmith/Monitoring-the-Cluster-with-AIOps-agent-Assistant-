@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Loader } from '../components/common/Loader';
-import { registerUser } from '../api/auth';
+import { registerUser, loginUser } from '../api/auth';
 
 export function RegisterPage() {
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
@@ -22,15 +23,19 @@ export function RegisterPage() {
     setError(null);
 
     try {
-      const data = await registerUser({ fullName, email, role, password });
+      // 1. Register the new user (Backend returns user object, no token)
+      await registerUser({ fullName, email, role, password });
 
-      if (data.token) {
-        sessionStorage.setItem('token', data.token);
+      // 2. Immediately log them in using the same credentials to retrieve a valid JWT
+      const loginData = await loginUser({ email, password });
+
+      if (loginData.token) {
+        sessionStorage.setItem('token', loginData.token);
+        navigate('/chat'); // Use React Router navigation instead of hard reload
+        window.location.reload(); // Force reload to update App.tsx state
       } else {
-        sessionStorage.setItem('token', 'simulated-jwt-token');
+        throw new Error('Authentication failed after registration');
       }
-      
-      window.location.href = '/chat';
     } catch (err: any) {
       setError(err.message);
     } finally {

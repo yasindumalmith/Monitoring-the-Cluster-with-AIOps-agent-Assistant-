@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ai-ops-backend
+  name: ai-ops-frontend
   namespace: ai-ops
   labels:
-    app: ai-ops-backend
+    app: ai-ops-frontend
 spec:
   type: NodePort
   ports:
-    - port: 4000
-      targetPort: 4000
+    - port: 80
+      targetPort: 80
       protocol: TCP
       name: http
   selector:
-    app: ai-ops-backend
+    app: ai-ops-frontend

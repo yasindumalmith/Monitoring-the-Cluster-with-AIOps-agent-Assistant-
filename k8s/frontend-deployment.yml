@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-ops-frontend
+  namespace: ai-ops
+  labels:
+    app: ai-ops-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-ops-frontend
+  template:
+    metadata:
+      labels:
+        app: ai-ops-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: yasindumalmith/ai-ops-frontend:v8
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              name: http
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi

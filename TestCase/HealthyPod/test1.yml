@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-healthy-app
+  namespace: healthy-pod
+spec:
+  replicas: 2 # Testing multi-pod scaling
+  selector:
+    matchLabels:
+      app: demo-healthy
+  template:
+    metadata:
+      labels:
+        app: demo-healthy
+    spec:
+      containers:
+        - name: web
+          image: nginx:alpine
+          resources:
+            limits: { cpu: "100m", memory: "128Mi" }
+            requests: { cpu: "50m", memory: "64Mi" }
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 10
