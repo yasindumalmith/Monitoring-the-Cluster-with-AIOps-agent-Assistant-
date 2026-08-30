@@ -186,6 +186,8 @@ The current system has been deployed and tested on **Amazon Elastic Kubernetes S
 
 # Architecture
 
+![System Architecture](docs/System%20Architecture.jpeg)
+
 The main components are:
 
 ```text
@@ -326,6 +328,8 @@ Uses PostgreSQL with **pgvector** and stores:
 ---
 
 # AI Investigation Flow
+
+![AI Workflow](docs/Ai_Workflow.png)
 
 The AI Agent does not collect the entire cluster state at once.
 
