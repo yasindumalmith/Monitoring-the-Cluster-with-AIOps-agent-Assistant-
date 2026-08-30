@@ -1,5 +1,7 @@
 # KubeAssist AI
 
+[Quick Guidance to Test the System (PDF)](https://drive.google.com/file/d/1ZAKRN1gHOb2gQJSg6rE40iOKgWVpwQAj/view?usp=sharing)
+
 **AI-Powered Kubernetes Troubleshooting Assistant**
 
 KubeAssist AI helps engineers investigate Kubernetes incidents by combining **live Kubernetes context**, **historical incident knowledge using RAG**, and **Claude-based AI reasoning**.
@@ -306,20 +308,20 @@ Uses PostgreSQL with **pgvector** and stores:
 
 # Technology Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | React, Vite |
-| Backend | Node.js, Express |
-| AI Agent | Python, FastAPI |
-| LLM | Claude Sonnet 4.6 |
-| LLM API | Anthropic API |
-| Embeddings | BAAI/bge-base-en-v1.5 |
-| Vector Database | PostgreSQL + pgvector |
-| User Database | PostgreSQL |
-| Kubernetes | Kubernetes API, Amazon EKS |
-| Real-Time Notifications | Server-Sent Events |
-| Containerization | Docker |
-| Cloud | AWS |
+| Layer                   | Technology                 |
+| ----------------------- | -------------------------- |
+| Frontend                | React, Vite                |
+| Backend                 | Node.js, Express           |
+| AI Agent                | Python, FastAPI            |
+| LLM                     | Claude Sonnet 4.6          |
+| LLM API                 | Anthropic API              |
+| Embeddings              | BAAI/bge-base-en-v1.5      |
+| Vector Database         | PostgreSQL + pgvector      |
+| User Database           | PostgreSQL                 |
+| Kubernetes              | Kubernetes API, Amazon EKS |
+| Real-Time Notifications | Server-Sent Events         |
+| Containerization        | Docker                     |
+| Cloud                   | AWS                        |
 
 ---
 
