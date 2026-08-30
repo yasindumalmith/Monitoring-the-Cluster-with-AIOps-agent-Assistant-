@@ -186,7 +186,7 @@ The current system has been deployed and tested on **Amazon Elastic Kubernetes S
 
 # Architecture
 
-![System Architecture](docs/System%20Architecture.jpeg)
+![System Architecture](docs/System%20Diagram.png)
 
 The main components are:
 
